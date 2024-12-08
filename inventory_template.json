@@ -1,0 +1,14 @@
+{
+    "Специи и приправы": {
+        "Орегано (гр.)": {
+            "raw": {
+                "quantity": 0,
+                "filled": false
+            },
+            "semi": {
+                "quantity": 0,
+                "filled": false
+            }
+        }
+    }
+}

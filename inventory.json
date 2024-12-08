@@ -1,0 +1,42 @@
+{
+    "Специи и приправы": {
+        "Орегано (гр.)": {
+            "raw": {
+                "quantity": 0,
+                "filled": false
+            },
+            "semi": {
+                "quantity": 0,
+                "filled": false
+            }
+        }
+    },
+    "-4662793236": {
+        "Специи и приправы": {
+            "Орегано (гр.)": {
+                "raw": {
+                    "quantity": 1,
+                    "filled": true
+                },
+                "semi": {
+                    "quantity": 20,
+                    "filled": true
+                }
+            }
+        }
+    },
+    "-4696680494": {
+        "Специи и приправы": {
+            "Орегано (гр.)": {
+                "raw": {
+                    "quantity": 10,
+                    "filled": true
+                },
+                "semi": {
+                    "quantity": 1,
+                    "filled": true
+                }
+            }
+        }
+    }
+}
