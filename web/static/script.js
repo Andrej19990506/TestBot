@@ -655,7 +655,7 @@ const selectedChatIds = new Set();
                 </div>
             `;
             
-            // Предотвращаем ��сплытие событий
+            // Предотвращаем ����сплытие событий
             confirmModal.addEventListener('click', (e) => {
                 e.stopPropagation();
             });
@@ -693,7 +693,7 @@ const selectedChatIds = new Set();
                     throw new Error('Не удалось найти уведомление или ID события');
                 }
 
-                // Собираем оставшиеся ув��домления
+                // Собираем оставшиеся ��в��домления
                 const remainingNotifications = Array.from(
                     document.querySelectorAll('.notification-edit-item')
                 )
@@ -1880,7 +1880,7 @@ const selectedChatIds = new Set();
                 text-align: center;
             }
 
-            /* Стили для всплывающей подсказ��и */
+            /* Стили для всплывающей под��каз���и */
             .notification-tooltip {
                 position: absolute;
                 top: 100%;
@@ -2260,3 +2260,411 @@ const selectedChatIds = new Set();
         `;
 
         document.head.appendChild(deleteModalStyles);
+
+        // Добавляем адаптивные стили для списка событий
+        const mobileEventListStyles = document.createElement('style');
+        mobileEventListStyles.textContent = `
+            /* Адаптивные стили для списка событий */
+            @media screen and (max-width: 768px) {
+                .event-wrapper {
+                    margin: 10px;
+                }
+
+                .event-item {
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                    border-left: 4px solid #FF5722;
+                    background: white;
+                }
+
+                .event-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+
+                .event-description {
+                    font-size: 16px;
+                    line-height: 1.4;
+                    margin-right: 35px;
+                    word-break: break-word;
+                }
+
+                .notification-icon {
+                    position: absolute;
+                    top: 15px;
+                    right: 15px;
+                }
+
+                .notification-tooltip {
+                    position: fixed;
+                    top: 50% !important;
+                    left: 50% !important;
+                    transform: translate(-50%, -50%) scale(0.9);
+                    width: 90%;
+                    max-width: 350px;
+                    max-height: 80vh;
+                    margin: 0;
+                    z-index: 10000;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.3s ease;
+                }
+
+                .notification-icon:hover .notification-tooltip,
+                .notification-tooltip:hover {
+                    opacity: 1;
+                    visibility: visible;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+
+                .event-datetime {
+                    font-size: 14px;
+                    color: #666;
+                    margin: 8px 0;
+                }
+
+                .event-chats {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    margin-top: 10px;
+                }
+
+                .chat-tag {
+                    font-size: 12px;
+                    padding: 4px 8px;
+                    background: #f5f5f5;
+                    border-radius: 12px;
+                    color: #666;
+                }
+
+                /* Улучшенный свайп для удаления */
+                .event-item {
+                    touch-action: pan-y pinch-zoom;
+                    transition: transform 0.3s ease, opacity 0.3s ease;
+                }
+
+                .event-item.swiping {
+                    transition: none;
+                }
+
+                .event-item.delete-threshold-reached {
+                    background-color: #fff5f5;
+                }
+
+                /* Стили для кнопок подтверждения удаления */
+                .confirmation-buttons {
+                    display: flex;
+                    gap: 10px;
+                    padding: 10px 15px;
+                    justify-content: flex-end;
+                    background: white;
+                    border-radius: 0 0 8px 8px;
+                }
+
+                .confirmation-buttons button {
+                    padding: 8px 16px;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                }
+
+                .confirmation-buttons button:first-child {
+                    background: #ff5722;
+                    color: white;
+                }
+
+                .confirmation-buttons button:last-child {
+                    background: #f5f5f5;
+                    color: #666;
+                }
+
+                /* Темная тема */
+                @media (prefers-color-scheme: dark) {
+                    .event-item {
+                        background: #1a1a1a;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                    }
+
+                    .event-description {
+                        color: #fff;
+                    }
+
+                    .event-datetime {
+                        color: #aaa;
+                    }
+
+                    .chat-tag {
+                        background: #333;
+                        color: #fff;
+                    }
+
+                    .notification-tooltip {
+                        background: #1a1a1a;
+                        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                    }
+
+                    .confirmation-buttons {
+                        background: #1a1a1a;
+                    }
+
+                    .confirmation-buttons button:last-child {
+                        background: #333;
+                        color: #fff;
+                    }
+                }
+
+                /* Улучшенная обратная связь при касании */
+                .event-item:active {
+                    transform: scale(0.98);
+                }
+
+                /* Анимации */
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(-100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+
+                .event-item {
+                    animation: slideIn 0.3s ease-out;
+                }
+
+                /* Оптимизация для различных размеров экрана */
+                @media screen and (max-width: 480px) {
+                    .event-wrapper {
+                        margin: 8px;
+                    }
+
+                    .event-item {
+                        padding: 12px;
+                    }
+
+                    .event-description {
+                        font-size: 14px;
+                    }
+                }
+
+                @media screen and (max-width: 320px) {
+                    .event-wrapper {
+                        margin: 6px;
+                    }
+
+                    .event-item {
+                        padding: 10px;
+                    }
+
+                    .chat-tag {
+                        font-size: 11px;
+                        padding: 3px 6px;
+                    }
+                }
+            }
+        `;
+
+        document.head.appendChild(mobileEventListStyles);
+
+        // Добавляем адаптивные стили для модальных окон
+        const adaptiveModalStyles = document.createElement('style');
+        adaptiveModalStyles.textContent = `
+            /* Адаптивные стили для модальных окон */
+            @media screen and (max-width: 768px) {
+                /* Основное модальное окно */
+                .notification-editor-modal {
+                    width: 100% !important;
+                    max-width: none !important;
+                    height: 100vh !important;
+                    max-height: none !important;
+                    border-radius: 0 !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+
+                .notification-editor-modal h3 {
+                    padding: 20px !important;
+                    margin: 0 !important;
+                    background: #fff !important;
+                    position: sticky !important;
+                    top: 0 !important;
+                    z-index: 2 !important;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+                }
+
+                .notifications-list {
+                    flex: 1 !important;
+                    overflow-y: auto !important;
+                    padding: 15px !important;
+                    padding-bottom: 120px !important;
+                    -webkit-overflow-scrolling: touch !important;
+                }
+
+                .notification-edit-item {
+                    background: #f8f8f8 !important;
+                    border-radius: 12px !important;
+                    padding: 15px !important;
+                    margin-bottom: 12px !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 12px !important;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+                }
+
+                .notification-edit-item select,
+                .notification-edit-item input {
+                    width: 100% !important;
+                    padding: 12px !important;
+                    border-radius: 8px !important;
+                    border: 1px solid #ddd !important;
+                    font-size: 16px !important;
+                }
+
+                .notification-edit-item .remove-notification-btn {
+                    position: absolute !important;
+                    top: 10px !important;
+                    right: 10px !important;
+                    width: 30px !important;
+                    height: 30px !important;
+                    border-radius: 50% !important;
+                    background: rgba(255, 87, 34, 0.1) !important;
+                    color: #ff5722 !important;
+                }
+
+                .bottom-actions {
+                    position: fixed !important;
+                    bottom: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    background: #fff !important;
+                    padding: 15px !important;
+                    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
+                    z-index: 3 !important;
+                }
+
+                .add-notification-btn {
+                    margin-bottom: 10px !important;
+                    height: 44px !important;
+                    font-size: 16px !important;
+                }
+
+                .modal-actions {
+                    display: grid !important;
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 10px !important;
+                }
+
+                .modal-actions button {
+                    height: 44px !important;
+                    font-size: 16px !important;
+                }
+
+                /* Модальное окно подтверждения удаления */
+                .delete-confirmation-modal .delete-confirmation-content {
+                    width: 90% !important;
+                    max-width: 320px !important;
+                    padding: 25px 20px !important;
+                    border-radius: 16px !important;
+                }
+
+                .delete-confirmation-content h4 {
+                    font-size: 18px !important;
+                    margin-bottom: 8px !important;
+                }
+
+                .delete-confirmation-content p {
+                    font-size: 14px !important;
+                    margin-bottom: 20px !important;
+                }
+
+                .delete-confirmation-actions {
+                    flex-direction: column !important;
+                    gap: 8px !important;
+                }
+
+                .delete-confirmation-actions button {
+                    width: 100% !important;
+                    height: 44px !important;
+                    font-size: 16px !important;
+                    border-radius: 8px !important;
+                }
+
+                /* Темная тема */
+                @media (prefers-color-scheme: dark) {
+                    .notification-editor-modal {
+                        background: #1a1a1a !important;
+                    }
+
+                    .notification-editor-modal h3 {
+                        background: #1a1a1a !important;
+                        color: #fff !important;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+                    }
+
+                    .notification-edit-item {
+                        background: #2d2d2d !important;
+                    }
+
+                    .notification-edit-item select,
+                    .notification-edit-item input {
+                        background: #333 !important;
+                        border-color: #444 !important;
+                        color: #fff !important;
+                    }
+
+                    .bottom-actions {
+                        background: #1a1a1a !important;
+                        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2) !important;
+                    }
+
+                    .add-notification-btn {
+                        background: #333 !important;
+                        color: #fff !important;
+                    }
+
+                    .add-notification-btn:hover {
+                        background: #444 !important;
+                    }
+                }
+
+                /* Улучшения для iPhone с челкой */
+                @supports (padding-bottom: env(safe-area-inset-bottom)) {
+                    .bottom-actions {
+                        padding-bottom: calc(15px + env(safe-area-inset-bottom)) !important;
+                    }
+                }
+
+                /* Оптимизация для маленьких экранов */
+                @media screen and (max-width: 320px) {
+                    .notification-edit-item {
+                        padding: 12px !important;
+                    }
+
+                    .notification-edit-item select,
+                    .notification-edit-item input {
+                        font-size: 14px !important;
+                        padding: 10px !important;
+                    }
+
+                    .bottom-actions {
+                        padding: 10px !important;
+                    }
+
+                    .modal-actions button {
+                        font-size: 14px !important;
+                        height: 40px !important;
+                    }
+                }
+            }
+        `;
+
+        document.head.appendChild(adaptiveModalStyles);
