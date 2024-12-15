@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Интегрированное приложение</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='air-datepicker.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+</head>
+<body>
+    <h1 id="main-header">Система управления событиями!</h1>
+
+    <div id="create-event-section" class="content-section content">
+        <div class="event-settings">
+            <!-- Основные настройки события -->
+            <div class="event-basic-settings">
+                <div class="event-description" contenteditable="true" data-placeholder="Описание события"></div>
+                <div class="input-container">
+                    <input type="text" id="event-date" style="display: none;">
+                    <span class="datepicker-svg icon" id="date-picker-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25px" height="25px" viewBox="0 0 485.213 485.212">
+                            <path d="M60.652,75.816V15.163C60.652,6.781,67.433,0,75.817,0c8.38,0,15.161,6.781,15.161,15.163v60.653
+                            c0,8.38-6.781,15.161-15.161,15.161C67.433,90.978,60.652,84.196,60.652,75.816z M318.424,90.978
+                            c8.378,0,15.163-6.781,15.163-15.161V15.163C333.587,6.781,326.802,0,318.424,0c-8.382,0-15.168,6.781-15.168,15.163v60.653
+                            C303.256,84.196,310.042,90.978,318.424,90.978z M485.212,363.906c0,66.996-54.312,121.307-121.303,121.307
+                            c-66.986,0-121.302-54.311-121.302-121.307c0-66.986,54.315-121.3,121.302-121.3C430.9,242.606,485.212,296.919,485.212,363.906z
+                            M454.89,363.906c0-50.161-40.81-90.976-90.98-90.976c-50.166,0-90.976,40.814-90.976,90.976c0,50.171,40.81,90.98,90.976,90.98
+                            C414.08,454.886,454.89,414.077,454.89,363.906z M121.305,181.955H60.652v60.651h60.653V181.955z M60.652,333.584h60.653V272.93
+                            H60.652V333.584z M151.629,242.606h60.654v-60.651h-60.654V242.606z M151.629,333.584h60.654V272.93h-60.654V333.584z
+                            M30.328,360.891V151.628h333.582v60.653h30.327V94c0-18.421-14.692-33.349-32.843-33.349h-12.647v15.166
+                            c0,16.701-13.596,30.325-30.322,30.325c-16.731,0-30.326-13.624-30.326-30.325V60.651H106.14v15.166
+                            c0,16.701-13.593,30.325-30.322,30.325c-16.733,0-30.327-13.624-30.327-30.325V60.651H32.859C14.707,60.651,0.001,75.579,0.001,94
+                            v266.892c0,18.36,14.706,33.346,32.858,33.346h179.424v-30.331H32.859C31.485,363.906,30.328,362.487,30.328,360.891z"/>
+                        </svg>
+                    </span>
+                    <span class="date-field" id="dateField"></span>
+                    <span class="time-field" id="timeField"></span>
+                </div>
+            </div>
+
+            <!-- Настройки повторения -->
+            <div class="repeat-settings">
+                <select id="repeat-type">
+                    <option value="none">Без повторения</option>
+                    <option value="daily">Ежедневно</option>
+                    <option value="weekly">Еженедельно</option>
+                    <option value="monthly">Ежемесячно</option>
+                </select>
+
+                <!-- Настройки для еженедельного повторения -->
+                <div id="weekly-settings" class="hidden">
+                    <div class="weekday-selector">
+                        <label><input type="checkbox" value="1">Пн</label>
+                        <label><input type="checkbox" value="2">Вт</label>
+                        <label><input type="checkbox" value="3">Ср</label>
+                        <label><input type="checkbox" value="4">Чт</label>
+                        <label><input type="checkbox" value="5">Пт</label>
+                        <label><input type="checkbox" value="6">Сб</label>
+                        <label><input type="checkbox" value="0">Вс</label>
+                    </div>
+                </div>
+
+                <!-- Настройки для ежемесячного повторения -->
+                <div id="monthly-settings" class="hidden">
+                    <select id="month-day">
+                        <!-- Дни месяца будут добавлены через JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Настройки уведомлений -->
+            <div class="notification-settings">
+                <h3>Настройки уведомлений</h3>
+                <button onclick="addNotification()" class="add-notification-btn">+ Добавить уведомление</button>
+                <div id="notifications-container">
+                    <!-- Шаблон уведомления -->
+                    <div class="notification-template hidden">
+                        <select class="notification-time">
+                            <option value="5">За 5 минут</option>
+                            <option value="15">За 15 минут</option>
+                            <option value="30">За 30 минут</option>
+                            <option value="60">За 1 час</option>
+                            <option value="1440">За 1 день</option>
+                        </select>
+                        <input type="text" class="custom-message" placeholder="Текст уведомления">
+                        <button onclick="removeNotification(this)" class="remove-notification-btn">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="chats-container"></div>
+        <button class="create-button" onclick="createNewEvent()">Создать событие</button>
+    </div>
+    <div id="event-list-section" class="content-section content hidden">
+        <div class="event-list-header">
+            <h2>Список событий</h2>
+            <div class="event-filters">
+                <select id="chat-filter" multiple>
+                    <!-- Чаты будут добавлены через JavaScript -->
+                </select>
+                <button onclick="clearFilters()" class="clear-filter">Сбросить фильтры</button>
+            </div>
+        </div>
+        <div id="event-list-container">
+            <!-- События будут добавлены через JavaScript -->
+        </div>
+    </div>
+    <div>
+        <button class="nav-button to-list" onclick="navigateTo('event-list-section')">Список событий</button>
+        <button class="nav-button to-create" onclick="navigateTo('create-event-section')">Создать событие</button>        
+    </div>   
+
+
+
+    <div id="confirmation-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Подтверждене удаления</h2>
+            <p>Вы уверены, что хотите удалить это событие?</p>
+            <button id="confirm-delete" class="modal-button">Да</button>
+            <button id="cancel-delete" class="modal-button">Отмена</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='air-datepicker.js') }}" defer></script> 
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script> <!-- defer для загрузки после DOM -->
+
+ 
+
+
+
+    <!-- Шаблон события (скрытый) -->
+    <template id="event-template">
+        <div class="event-item">
+            <div class="event-main-info">
+                <div class="event-header">
+                    <div class="event-description"></div>
+                    <div class="notification-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                            <g id="notification">
+                                <path d="M26,25.71a22.94,22.94,0,0,1-1-6.58V13.81a8.74,8.74,0,0,0-6-8.5V5a3,3,0,0,0-6,0v.29a8.73,8.73,0,0,0-6.06,8.52v5.32a22.6,22.6,0,0,1-1,6.58,1,1,0,0,0,1,1.29h5.2A4,4,0,0,0,16,30H16a4,4,0,0,0,3.83-3H25a1,1,0,0,0,.8-.4A1,1,0,0,0,26,25.71ZM15,5a1,1,0,0,1,2,0H15Zm1,23H16a2,2,0,0,1-1.71-1h3.48A2,2,0,0,1,16,28Zm3-3H8.24a25.2,25.2,0,0,0,.7-5.87V13.81C8.94,10.06,11.67,7,15,7H16.9C20.26,7,23,10.06,23,13.81v5.32a25.2,25.2,0,0,0,.7,5.87Z"/>
+                            </g>
+                        </svg>
+                        <span class="notification-count"></span>
+                    </div>
+                </div>
+                <div class="event-datetime">
+                    <span class="event-date"></span>
+                    <span class="event-time"></span>
+                </div>
+            </div>
+            <div class="event-chats">
+                <!-- Чаты будут добавлены как теги -->
+            </div>
+        </div>
+    </template>
+</body>
+</html>

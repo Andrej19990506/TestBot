@@ -1,0 +1,628 @@
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+.hidden {
+    display: none;
+}
+
+.air-datepicker {
+    position: absolute;
+    z-index: 1000;
+}
+
+.date-field, .time-field {
+    text-align: center; 
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 15px;
+    font-size: 15px;
+    color: #333;
+    margin: 0 10px;
+    background: #f5f5f5;
+    padding: 8px;
+    border-radius: 4px;
+    min-width: 60px;
+}
+
+#dateField {
+    top: 43px;
+    left: 70px;
+    height: 15px;
+    width: 55px;
+}
+
+#timeField {
+    top: 43px;
+    left: 7px;
+    height: 15px;
+    width: 55px;
+}
+
+.input-container {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 278px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 9px;
+    padding: 5px;
+    align-items: center;
+}
+
+.event-description {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 9px;
+    display: flex; /* Измените на block для корректной работы высоты */
+    align-items: center;
+    min-height: 40px;
+    max-height: 120px; /* Максимальная высота перед прокруткой */
+    overflow-y: auto; /* Прокрутка ��������о вертикали */
+    overflow-x: hidden; /* Убрать горизонтальную прокрутку */
+    white-space: normal; /* Позволяет перенос строк */
+    word-wrap: break-word; /* Позволяет переносить длинные слова */
+    outline: none;
+    color: #666;
+    border-radius: 9px;
+    text-align: left;
+    
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.event-description:empty:before {
+    content: attr(data-placeholder);
+    color: #999;
+}
+
+.event-description:focus {
+    border-color: blue;
+}
+
+.datepicker-svg {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.datepicker-svg svg {
+    width: 25px;
+    height: 25px;
+    fill: #666;
+}
+
+.timepicker-svg svg {
+    width: 25px;
+    height: 25px;
+    fill: #666; /* Цвет заливки иконки */
+}
+
+.datepicker-svg span {
+    margin-left: 8px;
+    font-size: 16px;
+    color: #666;
+}
+
+.date-display {
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 4px;
+    margin-left: 8px;
+    user-select: none; /* Чтобы избежать выделения текста */
+}
+
+.nav-button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #333;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px #aaa;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+.nav-button:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 2px #888;
+}
+.content {
+    margin-top: 20px;
+    opacity: 0; /* Начальное состояние для анимации */
+    transform: scale(0.8); /* Уменьшенный масштаб для начальной позиции */
+}
+.item-list {
+    list-style-type: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.item-list li {
+    padding: 10px 15px;
+    margin: 5px 0;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    color: #333;
+}
+.item-list li:hover {
+    background-color: #e0e0e0;
+}
+.item-list li.selected {
+    background-color: #FF5722;
+    color: white;
+}
+.create-button, .select-all-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #fff;
+    background-color: #FF5722;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 5px #999;
+    margin: 20px 10px;
+    display: inline-block;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+.create-button:hover, .select-all-button:hover {
+    background-color: #E64A19;
+    box-shadow: 0 3px #666;
+}
+#main-header {
+    color: aliceblue;
+}
+
+/* Стили для контейнера списка событий */
+#event-list-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.event-list-header {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.event-wrapper {
+    position: relative;
+    margin-bottom: 15px;
+    z-index: 1;
+}
+
+.event-wrapper:hover {
+    z-index: 2; /* Увеличиваем z-index при наведении */
+}
+
+.event-item {
+    background-color: #fff;
+    border-left: 4px solid #FF5722;
+    border-radius: 4px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: visible;
+}
+
+.event-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.event-main-info {
+    margin-bottom: 10px;
+    overflow: visible;
+}
+
+.event-description {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.event-datetime {
+    font-size: 14px;
+    color: #666;
+}
+
+.event-date, .event-time {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.event-chats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.chat-tag {
+    background-color: #f5f5f5;
+    color: #666;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.chat-tag::before {
+    content: '#';
+    margin-right: 4px;
+    color: #FF5722;
+}
+
+.chat-tag:hover {
+    background-color: #FF5722;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.confirmation-buttons {
+    display: none; /* Изначально скрыто */
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.confirmation-buttons button {
+    padding: 5px 15px;
+    margin: 0 5px;
+    font-size: 14px;
+    background-color: #FF5722;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-buttons button:hover {
+    background-color: #E64A19;
+}
+
+.confirmation-message {
+    display: none; /* Изначально скрыто */
+    font-size: 16px;
+    color: #333;
+}
+
+.delete-threshold-reached {
+    border-left: 5px solid red !important; /*!important для надежности применения*/
+}
+
+.notification {
+    position: fixed;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    opacity: 0;
+    transition: top 0.3s ease, opacity 0.3s ease;
+    z-index: 1000; /* for ensuring it's on top */
+}
+
+.container {
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.button {
+    inline-size: 100%;
+    padding: 10px 20px;
+    font: inherit;
+    color: currentColor;
+    background-color: #E64A19;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .button:hover,
+  .button:focus-visible {
+    background-color: #f5cac3;
+  }
+  
+  .menu {
+    position: relative;
+    margin-block-start: 0.5lh;
+    background-color: #E64A19;
+    padding: 0;
+    overflow: hidden;
+    line-height: 0;
+    color: transparent;
+    transition: line-height 0.5s, color 0.5s;
+  }
+  
+  .menu-item {
+    overflow: hidden;
+  }
+  
+  .menu-link {
+    display: block;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .menu-link:hover,
+  .menu-link:focus-visible {
+    background-color: #f5cac3;
+  }
+  
+  .button.active ~ .menu {
+    line-height: 1.2;
+    color: currentColor;
+  }
+  
+.event-settings {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.weekday-selector {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.weekday-selector label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.notification-settings {
+    margin-top: 20px;
+}
+
+.notification-template {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.test-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.test-panel button {
+    margin: 5px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    background: #FF5722;
+    color: white;
+    cursor: pointer;
+}
+
+.test-panel button:hover {
+    background: #E64A19;
+}
+
+.stats-container {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.stats-container h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.stats-container p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.event-datetime {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.date-field, .time-field {
+    padding: 5px 10px;
+    margin: 0 5px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    min-width: 80px;
+}
+
+.datepicker-svg {
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Эффект размытия для фона */
+.blur-background {
+    filter: blur(3px);
+    pointer-events: none;
+}
+
+/* Обновляем стили для модального окна редактирования уведомлений */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.notification-editor-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.visible .notification-editor-modal {
+    transform: scale(1);
+}
+
+/* Стили для списка уведомлений в редакторе */
+.notifications-list {
+    margin: 20px 0;
+}
+
+.notification-edit-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.notification-edit-item:hover {
+    background: #f0f0f0;
+}
+
+.notification-edit-item select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 120px;
+}
+
+.notification-edit-item input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.notification-edit-item .remove-notification-btn {
+    background: none;
+    border: none;
+    color: #ff5722;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 8px;
+    transition: color 0.2s ease;
+}
+
+.notification-edit-item .remove-notification-btn:hover {
+    color: #f44336;
+}
+
+/* Стили для кнопок в модальном окне */
+.add-notification-btn {
+    width: 100%;
+    padding: 12px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 8px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 20px;
+}
+
+.add-notification-btn:hover {
+    background: #ff5722;
+    color: white;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-actions .save-btn {
+    background: #ff5722;
+    color: white;
+}
+
+.modal-actions .save-btn:hover {
+    background: #f44336;
+}
+
+.modal-actions .cancel-btn {
+    background: #f5f5f5;
+    color: #666;
+}
+
+.modal-actions .cancel-btn:hover {
+    background: #e0e0e0;
+}
+
+/* Заголовок модального окна */
+.notification-editor-modal h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 18px;
+}
+  
