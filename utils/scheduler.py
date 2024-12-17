@@ -109,26 +109,65 @@ class Scheduler:
         asyncio.ensure_future(self.async_check_events(context))
 
     async def async_check_events(self, context: CallbackContext):
-        # Вся логика проверки событий
         try:
             current_time = datetime.now()
             logging.info("Проверка событий началась...")
 
-            for user_id, events in self.chat_manager.events.items():
-                for event in events:
-                    event_time_str = f"{event['date']} {event['time']}"
-                    event_time = datetime.strptime(event_time_str, '%Y-%m-%d %H:%M')
-                    time_diff = (event_time - current_time).total_seconds()
+            # Получаем все события напрямую, так как они хранятся в виде списка
+            events = self.chat_manager.events
+            
+            for event in events:
+                try:
+                    event_time_str = f"{event['date']}"  # Предполагаем, что дата и время уже в одном поле
+                    # Изменяем формат для соответствия входящей дате
+                    event_time = datetime.strptime(event_time_str, '%d.%m.%Y %H:%M')
+                    
+                    # Проверяем все уведомления для события
+                    notifications = event.get('notifications', [])
+                    for notification in notifications:
+                        # Получаем время уведомления
+                        notification_time = self.calculate_notification_time(
+                            event_time, 
+                            notification['time'], 
+                            notification['unit']
+                        )
+                        
+                        # Проверяем, пора ли отправлять уведомление
+                        time_diff = (notification_time - current_time).total_seconds()
+                        if 0 < time_diff < 60:  # Проверяем в течение минуты
+                            # Формируем сообщение уведомления
+                            message = notification['message'].format(
+                                description=event['description'],
+                                date=event['date']
+                            )
+                            
+                            # Отправляем уведомление в выбранные чаты
+                            chat_ids = event.get('chat_ids', [])
+                            for chat_id in chat_ids:
+                                try:
+                                    await context.bot.send_message(
+                                        chat_id=chat_id,
+                                        text=message
+                                    )
+                                    logging.info(f"Уведомление отправлено в чат {chat_id} для события {event['description']}")
+                                except Exception as e:
+                                    logging.error(f"Ошибка отправки уведомления в чат {chat_id}: {e}")
 
-                    if 0 < time_diff < 15:
-                        message = f"Напоминание: {event['description']} "\
-                                f"запланировано на {event['date']} в {event['time']}"
-                        chat_ids = self.chat_manager.get_chat_ids_by_user(user_id)
-                        for chat_id in chat_ids:
-                            await context.bot.send_message(chat_id=chat_id, text=message)
-                            logging.info(f"Сообщение отправлено в чат ID: {chat_id} об событии {event['description']}")
+                except Exception as e:
+                    logging.error(f"Ошибка обработки события: {e}")
+                    continue
 
             logging.info("Проверка событий завершена.")
         except Exception as e:
             logging.error(f"Ошибка в async_check_events: {e}")
+
+    def calculate_notification_time(self, event_time, notification_time, unit):
+        """Вычисляет время отправки уведомления на основе настроек"""
+        if unit == 'minutes':
+            return event_time - timedelta(minutes=notification_time)
+        elif unit == 'hours':
+            return event_time - timedelta(hours=notification_time)
+        elif unit == 'days':
+            return event_time - timedelta(days=notification_time)
+        return event_time
 

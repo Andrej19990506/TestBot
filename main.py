@@ -1,4 +1,7 @@
 import logging
+import threading
+from web import create_app  # Импортируем функцию создания приложения Flask
+
 def setup_logging():
     # Убираем все закрывающие обработчики, если они есть
     for handler in logging.root.handlers[:]:
@@ -333,6 +336,11 @@ def setup_application(application, inventory_conv_handler):
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text_message))
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome_message))
 
+# Функция для запуска Flask-сервера
+def run_flask():
+    app = create_app()
+    app.run(host='0.0.0.0', port=5000, debug=False)  # debug=False чтобы избежать конфликтов с основным потоком
+
 def main():
     global chat_manager, event_manager, access_control, inventory_manager
     
@@ -423,7 +431,18 @@ def main():
     # Настройка и запуск приложения
     setup_application(application, inventory_conv_handler)
     print("Бот запущен. Ожидание команд...")
-    application.run_polling()
+    
+    # Возвращаем application для использования в основном потоке
+    return application
 
 if __name__ == '__main__':
-   main()
+    # Запускаем Flask в отдельном потоке
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True  # Поток завершится вместе с основной программой
+    flask_thread.start()
+    
+    # Получаем настроенное приложение бота
+    app = main()
+    
+    # Запускаем бота в основном потоке
+    app.run_polling()

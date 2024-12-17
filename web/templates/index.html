@@ -93,11 +93,15 @@
     </div>
     <div id="event-list-section" class="content-section content hidden">
         <div class="event-list-header">
-            <h2>Список событий</h2>
             <div class="event-filters">
-                <select id="chat-filter" multiple>
-                    <!-- Чаты будут добавлены через JavaScript -->
-                </select>
+                <button class="toggle-filters-icon">
+                    <svg class="filter-icon" viewBox="0 0 24 24">
+                        <path d="M3 3h18l-7 10v8l-4-4v-4L3 3z"/>
+                    </svg>
+                </button>
+                <div class="custom-select-container">
+                    <!-- Опции фильтрации будут добавлены через JavaScript -->
+                </div>
                 <button onclick="clearFilters()" class="clear-filter">Сбросить фильтры</button>
             </div>
         </div>
@@ -105,29 +109,6 @@
             <!-- События будут добавлены через JavaScript -->
         </div>
     </div>
-    <div>
-        <button class="nav-button to-list" onclick="navigateTo('event-list-section')">Список событий</button>
-        <button class="nav-button to-create" onclick="navigateTo('create-event-section')">Создать событие</button>        
-    </div>   
-
-
-
-    <div id="confirmation-modal" class="modal hidden">
-        <div class="modal-content">
-            <h2>Подтверждене удаления</h2>
-            <p>Вы уверены, что хотите удалить это событие?</p>
-            <button id="confirm-delete" class="modal-button">Да</button>
-            <button id="cancel-delete" class="modal-button">Отмена</button>
-        </div>
-    </div>
-    <script src="{{ url_for('static', filename='air-datepicker.js') }}" defer></script> 
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script> <!-- defer для загрузки после DOM -->
-
- 
-
-
-
-    <!-- Шаблон события (скрытый) -->
     <template id="event-template">
         <div class="event-item">
             <div class="event-main-info">
@@ -152,5 +133,23 @@
             </div>
         </div>
     </template>
+    <div>
+        <button class="nav-button to-list" onclick="navigateTo('event-list-section')">Список событий</button>
+        <button class="nav-button to-create" onclick="navigateTo('create-event-section')">Создать событие</button>        
+    </div>   
+
+
+
+    <div id="confirmation-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Подтверждене удаления</h2>
+            <p>Вы уверены, что хотите удалить это событие?</p>
+            <button id="confirm-delete" class="modal-button">Да</button>
+            <button id="cancel-delete" class="modal-button">Отмена</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='air-datepicker.js') }}" defer></script> 
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script> <!-- defer для загрузки после DOM -->
+
 </body>
 </html>

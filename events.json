@@ -1,1 +1,148 @@
-{"1682142222": [{"index": 0, "date": "2024-12-02", "description": "Привет", "time": "16:21"}]}
+[
+    {
+        "description": "выфв",
+        "date": "17.12.2024 03:12",
+        "chat_ids": [
+            "-4774890964",
+            "-4755479474"
+        ],
+        "repeat_settings": {
+            "type": "none"
+        },
+        "notifications": [
+            {
+                "time": 5,
+                "unit": "minutes",
+                "message": "⚠️ Напоминание: {description}",
+                "send_to_chats": true
+            }
+        ],
+        "id": 3
+    },
+    {
+        "description": "Ген уборка",
+        "date": "17.12.2024 08:33",
+        "chat_ids": [
+            "-4775448662",
+            "-4774890964",
+            "-4755479474",
+            "-4732427913",
+            "-4722230050",
+            "-4641251467"
+        ],
+        "repeat_settings": {
+            "type": "none"
+        },
+        "notifications": [
+            {
+                "time": 5,
+                "unit": "minutes",
+                "message": "⚠️ Напоминание: {description}",
+                "send_to_chats": true
+            }
+        ],
+        "id": 4
+    },
+    {
+        "description": "Ген уборка",
+        "date": "17.12.2024 08:57",
+        "chat_ids": [
+            "-4722230050",
+            "-4641251467",
+            "-4732427913",
+            "-4755479474",
+            "-4774890964",
+            "-4775448662"
+        ],
+        "repeat_settings": {
+            "type": "none"
+        },
+        "notifications": [
+            {
+                "time": 1440,
+                "unit": "minutes",
+                "message": "Не забудьте ген убрку",
+                "send_to_chats": true
+            }
+        ],
+        "id": 5
+    },
+    {
+        "description": "Начала смены",
+        "date": "17.12.2024 10:00",
+        "chat_ids": [
+            "-4641251467",
+            "-4722230050",
+            "-4732427913",
+            "-4755479474",
+            "-4774890964",
+            "-4775448662"
+        ],
+        "repeat_settings": {
+            "type": "daily"
+        },
+        "notifications": [
+            {
+                "time": 5,
+                "unit": "minutes",
+                "message": "Начала смены",
+                "send_to_chats": true
+            }
+        ],
+        "id": 6
+    },
+    {
+        "description": "Ген уборка",
+        "date": "17.12.2024 10:44",
+        "chat_ids": [
+            "-4641251467",
+            "-4722230050",
+            "-4732427913",
+            "-4755479474",
+            "-4774890964",
+            "-4775448662"
+        ],
+        "repeat_settings": {
+            "type": "daily"
+        },
+        "notifications": [
+            {
+                "time": 5,
+                "unit": "minutes",
+                "message": "Солсглслподм",
+                "send_to_chats": true
+            },
+            {
+                "time": 5,
+                "unit": "minutes",
+                "message": "⚠️ Напоминание: {description}",
+                "send_to_chats": true
+            }
+        ],
+        "id": 6
+    },
+    {
+        "description": "Ген уборка",
+        "date": "17.12.2024 17:16",
+        "chat_ids": [
+            "-4641251467",
+            "-4722230050",
+            "-4732427913",
+            "-4755479474",
+            "-4774890964",
+            "-4775448662"
+        ],
+        "repeat_settings": {
+            "type": "none"
+        },
+        "notifications": [
+            {
+                "time": 1440,
+                "unit": "minutes",
+                "message": "Завтра ген уборка быть всем",
+                "send_to_chats": true
+            }
+        ],
+        "id": 6
+    }
+]

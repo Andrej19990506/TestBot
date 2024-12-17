@@ -90,7 +90,7 @@ class CustomMessageHandler:
         logging.debug(f"Вызван process_start для user_id: {user_id}")
 
         keyboard = [
-            [InlineKeyboardButton("Добавить событие", callback_data='add_event')],
+            [InlineKeyboardButton("Добавить событие", web_app={'url': 'https://6324-176-215-122-184.ngrok-free.app'})],
             [InlineKeyboardButton("Показать события", callback_data='show_events')],
             [InlineKeyboardButton("Инвентаризация", callback_data='inventory')],
             [InlineKeyboardButton("Помощь", callback_data='help')]
