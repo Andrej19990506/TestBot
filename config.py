@@ -1,4 +1,4 @@
-bot_token = 'your-bot-token'
+bot_token = '8044750997:AAGsanhJ6VvfEjoJe-zVBqGOgw7bi0TbqKQ'
 
 class Config:
     DEBUG = True

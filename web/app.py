@@ -1,274 +1,189 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
-import logging
-from web.telegram_bot import TelegramBot
+from flask import Blueprint, request, jsonify, send_from_directory, current_app
 from flask_cors import CORS
-from config import bot_token
-import json
+import logging
 import os
-from utils.scheduler import Scheduler
-import asyncio
-from threading import Thread
-from flask_debugtoolbar import DebugToolbarExtension
+from web.telegram_bot import TelegramBot
+from config import bot_token
+from datetime import datetime
+import globals
+import traceback
+from utils.chat_manager import ChatManager
 
-# Получаем абсолютные пути
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-templates_dir = os.path.join(base_dir, 'web', 'templates')
-static_dir = os.path.join(base_dir, 'web', 'static')
+# Создаем Blueprint
+bp = Blueprint('main', __name__, static_folder='createEvent/create-event/build')
+CORS(bp, resources={r"/api/*": {"origins": "*"}})
 
-app = Flask(__name__,
-    static_url_path='/static',
-    static_folder='static',     # Относительный путь от web/
-    template_folder='templates' # Относительный путь от web/
-)
-CORS(app, resources={
-    r"/*": {
-        "origins": "*",
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
-scheduler = None  # Глобальная переменная для scheduler
+# Инициализация бота
+bot = TelegramBot(bot_token)
 
-EVENTS_FILE_PATH = 'events.json'
-CHAT_IDS_FILE_PATH = 'chat_ids.json'
-
-# Настройка приложения
-app.debug = True  # Включаем режим отладки
-app.config['SECRET_KEY'] = 'your-secret-key'  # Необходим для Debug Toolbar
-toolbar = DebugToolbarExtension(app)
-
-# Включаем автоматическую перезагрузку шаблонов
-app.config['TEMPLATES_AUTO_RELOAD'] = True
-
-def load_chat_ids():
-    """Загружает список чатов из файла chat_ids.json."""
-    if os.path.exists(CHAT_IDS_FILE_PATH):
-        try:
-            with open(CHAT_IDS_FILE_PATH, 'r', encoding='utf-8') as file:
-                chat_ids = json.load(file)
-                logging.info(f"Данные чатов успешно загружены: {chat_ids}")
-                return chat_ids
-        except json.JSONDecodeError as e:
-            logging.error(f"Ошибка декодирования JSON из файла {CHAT_IDS_FILE_PATH}: {e}")
-            return {}
-    else:
-        logging.warning(f"Файл {CHAT_IDS_FILE_PATH} не найден.")
-        return {}
-
-def load_events():
-    """Загружает список событий из файла"""
+@bp.route('/events', methods=['GET'])
+def get_events():
     try:
-        if os.path.exists(EVENTS_FILE_PATH):
-            with open(EVENTS_FILE_PATH, 'r', encoding='utf-8') as file:
-                events = json.load(file)
-                logging.info(f"Загружено {len(events)} событий")
-                return events
-        logging.info("Файл событий не найден, возвращаем пустой список")
-        return []
+        events = globals.chat_manager.get_events()
+        if not isinstance(events, list):
+            events = []
+        logging.info(f"Возвращаемые события: {events}")
+        return jsonify(events)
     except Exception as e:
-        logging.error(f"Ошибка при загрузке событий: {e}")
-        return []
+        logging.error(f"Ошибка получения событий: {e}")
+        return jsonify({'error': str(e)}), 500
 
-def save_events(events):
-    """Сохраняет список событий в файл"""
+@bp.route('/events', methods=['POST'])
+def create_event():
     try:
-        with open(EVENTS_FILE_PATH, 'w', encoding='utf-8') as file:
-            json.dump(events, file, ensure_ascii=False, indent=4)
-        logging.info(f"Сохранено {len(events)} событий")
-    except Exception as e:
-        logging.error(f"Ошибка при сохранении событий: {e}")
-        raise
-
-def init_routes(app):
-    # Регистрируем все маршруты для приложения
-    
-    @app.route('/')
-    def home():
+        data = request.get_json()
+        logging.info(f"Получены данные события: {data}")
+        
+        # Проверка обязательных полей
+        required_fields = ['description', 'date', 'chat_ids']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Отсутствует обязательное поле: {field}'}), 400
+        
+        # Проверяем формат даты
         try:
-            return render_template('index.html')
-        except Exception as e:
-            logging.error(f"Error rendering index.html: {e}")
-            return str(e), 500
+            datetime.strptime(data['date'], '%Y-%m-%d %H:%M')
+        except ValueError as e:
+            logging.error(f"Ошибка формата даты: {e}")
+            return jsonify({'error': 'Неверный формат даты. Ожидается формат: YYYY-MM-DD HH:mm'}), 400
 
-    @app.route('/create_event', methods=['POST'])
-    def create_event():
-        try:
-            event_data = request.json
-            logging.info(f"Получены данные события: {event_data}")
+        if not data['chat_ids']:
+            return jsonify({'error': 'Список chat_ids пуст'}), 400
             
-            if not event_data:
-                return jsonify({"error": "Нет данных события"}), 400
-                
-            required_fields = ['description', 'date', 'chat_ids', 'notifications']
-            missing_fields = [field for field in required_fields if not event_data.get(field)]
-            
-            if missing_fields:
-                return jsonify({
-                    "error": f"Отсутствуют обязательные поля: {', '.join(missing_fields)}"
-                }), 400
+        if not isinstance(data['chat_ids'], list):
+            return jsonify({'error': 'chat_ids должен быть списком'}), 400
 
-            events = load_events()
-            event_data['id'] = len(events) + 1
-            events.append(event_data)
-            
+        # Проверяем валидность chat_ids
+        valid_chat_ids = [str(id) for id in globals.chat_manager.chat_ids.values()]
+        logging.info(f"Доступные chat_ids: {valid_chat_ids}")
+        
+        for chat_id in data['chat_ids']:
+            chat_id_str = str(chat_id)
+            logging.info(f"Проверка chat_id: {chat_id_str}")
+            if chat_id_str not in valid_chat_ids:
+                logging.error(f"Недопустимый chat_id: {chat_id_str}. Доступные ID: {valid_chat_ids}")
+                return jsonify({'error': f'Недопустимый chat_id: {chat_id}'}), 400
+
+        # Создание события в базе данных
+        event_data = {
+            'description': data['description'],
+            'date': data['date'],
+            'chat_ids': [str(chat_id) for chat_id in data['chat_ids']],
+            'notifications': data.get('notifications', []),
+            'repeat': data.get('repeat', {'type': 'none'})
+        }
+        
+        logging.info(f"Подготовленные данные события: {event_data}")
+        
+        # Сохраняем событие
+        if not globals.chat_manager.add_event(event_data):
+            raise Exception("Ошибка при сохранении события")
+        
+        # Отправка события в телеграм
+        success_chats = []
+        failed_chats = []
+        telegram_bot = TelegramBot(bot_token)
+        
+        # Отправляем сообщение в каждый чат
+        for chat_id in event_data['chat_ids']:
             try:
-                save_events(events)
-                logging.info(f"Событие сохранено: {event_data}")
-            except Exception as e:
-                logging.error(f"Ошибка при сохранении события: {e}")
-                return jsonify({"error": "Ошибка при сохранении события"}), 500
-
-            if scheduler:
-                try:
-                    def schedule_task():
-                        asyncio.run(scheduler.schedule_notifications(event_data))
+                logging.info(f"Подготовка к отправке в чат {chat_id}")
+                
+                # Создаем отдельное сообщение для каждого чата
+                message = {
+                    'chat_id': chat_id,
+                    'description': event_data['description'],
+                    'date': event_data['date']
+                }
+                
+                logging.info(f"Отправка сообщения в чат {chat_id}: {message}")
+                
+                # Отправляем сообщение
+                result = telegram_bot.send_event(message)
+                if result:
+                    success_chats.append(chat_id)
+                    logging.info(f"Успешно отправлено в чат {chat_id}")
+                else:
+                    failed_chats.append(chat_id)
+                    logging.warning(f"Не удалось отправить сообщение в чат {chat_id}")
                     
-                    Thread(target=schedule_task).start()
-                    logging.info("Уведомления запланированы")
-                except Exception as e:
-                    logging.error(f"Ошибка при планировании уведомлений: {e}")
-
-            return jsonify({
-                "message": "Событие создано успешно",
-                "event": event_data
-            }), 201
-
-        except Exception as e:
-            logging.error(f"Критическая ошибка при создании события: {e}")
-            return jsonify({"error": str(e)}), 500
-
-    @app.route('/get_chats', methods=['GET'])
-    def get_chats():
-        try:
-            chat_ids = load_chat_ids()
-            chat_names = {str(chat_id): name for name, chat_id in chat_ids.items()}
-            return jsonify(chat_names), 200
-        except Exception as e:
-            logging.error(f"Ошибка при получении списка чатов: {e}")
-            return jsonify({'error': 'Ошибка при получении списка чатов'}), 500
-
-    @app.route('/get_events', methods=['GET'])
-    def get_events():
-        logging.info("Запрос получен на /get_events")
-        events = load_events()
-        return jsonify(events), 200
-
-    @app.route('/delete_event/<int:event_id>', methods=['DELETE'])
-    def delete_event(event_id):
-        try:
-            logging.info(f"Получен запрос на удаление события с ID: {event_id}")
-            
-            events = load_events()
-            logging.info(f"Загруженные события до удаления: {events}")
-            
-            # Проверяем формат ID в событиях
-            logging.info(f"Типы ID событий: {[type(event.get('id')) for event in events]}")
-            logging.info(f"ID событий: {[event.get('id') for event in events]}")
-            
-            # Находим событие для удаления
-            event_to_delete = next((event for event in events if event.get('id') == event_id), None)
-            logging.info(f"Найденное событие для удаления: {event_to_delete}")
-            
-            if event_to_delete:
-                events.remove(event_to_delete)
-                logging.info(f"События после удаления: {events}")
-                
-                save_events(events)
-                logging.info(f"Событие с ID {event_id} успешно удалено")
-                return jsonify({
-                    'success': True,
-                    'message': f'Событие с ID {event_id} успешно удалено'
-                }), 200
-            else:
-                logging.warning(f"Событие с ID {event_id} не найдено")
-                return jsonify({
-                    'success': False,
-                    'error': 'Событие не найдено'
-                }), 404
-                
-        except Exception as e:
-            logging.error(f"Ошибка при удалении события: {e}", exc_info=True)
-            return jsonify({
-                'success': False,
-                'error': f'Ошибка при удалении события: {str(e)}'
-            }), 500
-
-@app.route('/events/<int:event_id>/notifications', methods=['PUT'])
-def update_event_notifications(event_id):
-    try:
-        logging.info(f"Получен запрос на обновление уведомлений для события {event_id}")
-        data = request.json
-        logging.info(f"Полученные данные: {data}")
+            except Exception as e:
+                logging.error(f"Ошибка отправки в чат {chat_id}: {str(e)}\n{traceback.format_exc()}")
+                failed_chats.append(chat_id)
+                continue
         
-        events = load_events()
-        logging.info(f"Загружено событий: {len(events)}")
+        # Формируем ответ
+        response = {
+            'success': True,
+            'message': 'Событие успешно создано',
+            'details': {
+                'success_chats': success_chats,
+                'failed_chats': failed_chats,
+                'event_data': event_data
+            }
+        }
         
-        # Находим нужное событие
-        event = next((event for event in events if event.get('id') == event_id), None)
-        if not event:
-            logging.warning(f"Событие {event_id} не найдено")
-            return jsonify({
-                'success': False, 
-                'message': 'Событие не найдено'
-            }), 404
+        if failed_chats:
+            response['warning'] = f'Не удалось отправить сообщение в некоторые чаты: {failed_chats}'
             
-        # Проверяем данные уведомлений
-        notifications = data.get('notifications', [])
-        if not isinstance(notifications, list):
-            return jsonify({
-                'success': False,
-                'message': 'Неверный формат уведомлений'
-            }), 400
-
-        # Обновляем уведомления
-        event['notifications'] = notifications
-        
-        # Сохраняем изменения
-        save_events(events)
-        logging.info(f"События сохранены. Уведомления обновлены для события {event_id}")
-        
-        # Перепланируем уведомления
-        if scheduler:
-            def schedule_task():
-                asyncio.run(scheduler.schedule_notifications(event))
-            Thread(target=schedule_task).start()
-            logging.info("Уведомления запланированы")
-            
-        return jsonify({
-            'success': True, 
-            'message': 'Уведомления обновлены'
-        }), 200
+        logging.info(f"Отправка ответа: {response}")
+        return jsonify(response)
         
     except Exception as e:
-        logging.error(f"Ошибка при обновлении уведомлений: {e}", exc_info=True)
-        return jsonify({
-            'success': False, 
-            'message': str(e)
-        }), 500
+        error_msg = str(e)
+        stack_trace = traceback.format_exc()
+        logging.error(f"Ошибка при создании события: {error_msg}\n{stack_trace}")
+        return jsonify({'error': error_msg}), 500
 
-# Обработчики ошибок
-@app.errorhandler(404)
-def not_found_error(error):
-    return jsonify({
-        'error': 'Not Found',
-        'message': 'The requested URL was not found on the server.'
-    }), 404
+@bp.route('/chats', methods=['GET'])
+def get_chats():
+    try:
+        # Перезагружаем данные из файла
+        globals.chat_manager.load_chat_ids()
+        chats = globals.chat_manager.chat_ids
+        
+        logging.info(f"Raw chat_ids: {chats}")
+        
+        if not chats:
+            logging.warning("No chats found in chat_ids.json")
+            # Возвращаем тестовые данные если нет данных
+            chats = {
+                "Словцова": "-4774890964",
+                "Баумана": "-4722230050",
+                "Свердловская": "-4641251467",
+                "Взлека": "-4775448662",
+                "Комунальная": "-4732427913",
+                "Мате залки": "-4755479474"
+            }
+            
+        formatted_chats = {name: str(chat_id) for name, chat_id in chats.items()}
+        logging.info(f"Returning formatted chats: {formatted_chats}")
+        
+        response = jsonify(formatted_chats)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        logging.info(f"Response data: {response.get_data()}")
+        return response
+    except Exception as e:
+        logging.error(f"Error getting chats: {e}")
+        return jsonify({'error': str(e)}), 500
 
-@app.errorhandler(500)
-def internal_error(error):
-    return jsonify({
-        'error': 'Internal Server Error',
-        'message': str(error)
-    }), 500
+@bp.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({'status': 'healthy'}), 200
 
-# Логирование запросов
-@app.before_request
-def log_request_info():
-    logging.info('Path: %s', request.path)
-    logging.info('Template Folder: %s', app.template_folder)
-    logging.info('Static Folder: %s', app.static_folder)
+# Маршрут для статических файлов датапикера
+@bp.route('/static/<path:filename>')
+def serve_static(filename):
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return send_from_directory(os.path.join(root_dir, 'web', 'static'), filename)
 
-def init_app_with_scheduler(scheduler_instance):
-    """Инициализирует Flask приложение с планировщиком"""
-    global scheduler
-    scheduler = scheduler_instance
+# Маршрут для файлов React приложения
+@bp.route('/')
+def serve_react_root():
+    return send_from_directory(bp.static_folder, 'index.html')
+
+@bp.route('/<path:path>')
+def serve_react_static(path):
+    if os.path.exists(os.path.join(bp.static_folder, path)):
+        return send_from_directory(bp.static_folder, path)
+    return send_from_directory(bp.static_folder, 'index.html')

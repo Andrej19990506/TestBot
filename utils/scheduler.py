@@ -1,173 +1,122 @@
 import logging
 import asyncio
 from telegram.ext import CallbackContext, JobQueue
-from datetime import datetime,time,timedelta
-from utils.access_control import AccessControl
-from chat_manager import ChatManager
-from utils.mediator import Mediator
+from datetime import datetime, time, timedelta
 import pytz
+import json
+import argparse
+import os
+import sys
+
+# Получаем путь к директории проекта
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Добавляем путь проекта в sys.path
+sys.path.append(PROJECT_ROOT)
+
+# Теперь импортируем локальные модули
+from utils.access_control import AccessControl  # Изменим на относительный импорт
+from utils.chat_manager import ChatManager
+from utils.mediator import Mediator
 from components.inventory_manager import InventoryManager
 
+# Настраиваем пути к файлам
+EVENTS_FILE = os.path.join(PROJECT_ROOT, 'events.json')
 
-# Настройка уровней логирования для HTTP-библиотек
-# loggers_to_modify = ['httpx', 'http.client', 'asyncio', 'urllib3', 'aiohttp', 'telegram']
-# for logger_name in loggers_to_modify:
-#     logging.getLogger(logger_name).setLevel(logging.WARNING)
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
-def sync_wrapper(async_func, *args, **kwargs):
-    asyncio.create_task(async_func(*args, **kwargs))
+# Для тестирования нам не нужны все импорты, создадим упрощенную версию:
+if __name__ == "__main__":
+    # Отключаем ненужные импорты при тестировании
+    AccessControl = None
+    ChatManager = None
+    Mediator = None
+    InventoryManager = None
 
 class Scheduler:
-    def __init__(self, mediator, job_queue, chat_manager):
+    def __init__(self, mediator=None, chat_manager=None):
+        self.tasks = {}
+        self.running = False
         self.mediator = mediator
-        self.mediator.register_scheduler(self)
-        self.job_queue = job_queue
         self.chat_manager = chat_manager
+        self.job_queue = None
         self.inventory_manager = None
     
     def attach_inventory_manager(self, inventory_manager):
-        # Привязываем inventory_manager к scheduler
+        """Присоединяет менеджер инвентаря к планировщику"""
         self.inventory_manager = inventory_manager
-
-    def send_scheduled_message(self, context):
-        # Метод для отправки запланированных сообщений
-        pass
     
-
-
-    def schedule_daily_check(self):
-        # Запускаем асинхронный метод напрямую в JobQueue
-        self.job_queue.run_repeating(
-            self.async_check_events,
-            interval=60,
-            first=0
-        )
-
-    def schedule_daily_update(self):
-        logging.info("Планирование ежедневного обновления...")
-        # Установите временную зону Красноярска
-        krsk_tz = pytz.timezone('Asia/Krasnoyarsk')
-        
-        # Получите текущее время в данной временной зоне
-        local_time = krsk_tz.localize(datetime.combine(datetime.now().date(), time(18, 29)))
-        
-        # Переведите его в UTC
-        utc_time = local_time.astimezone(pytz.utc).time()
-        
-        logging.info(f"Запланировано обновление на {utc_time} UTC.")
-        
-        # Запланируйте задачу
-        self.job_queue.run_daily(
-            lambda context: sync_wrapper(self.disable_editing, context), 
-            time=utc_time
-        )
-
-    def schedule_daily_clear_inventory(self):
-        logging.info("Планирование ежедневной очистки инвентаризации...")
-        # Временная зона Красноярска
-        krsk_tz = pytz.timezone('Asia/Krasnoyarsk')
-        
-        # Локальное время 7 утра для запуска задачи
-        local_time = krsk_tz.localize(datetime.combine(datetime.now().date(), time(18, 31)))
-        
-        # Преобразуем его в UTC
-        utc_time = local_time.astimezone(pytz.utc).time()
-        
-        logging.info(f"Запланирована очистка инвентаризации на {utc_time} UTC.")
-
-        # Добавляем задачу в планировщик
-        self.job_queue.run_daily(
-            lambda context: sync_wrapper(self.clear_inventory, context), 
-            time=utc_time
-        )    
-
-    async def clear_inventory(self, context: CallbackContext):
-        logging.info("Очистка данных инвентаризации...")
-        if self.inventory_manager:
-            self.inventory_manager.clear_all_inventories()
-            logging.info("Очистка инвентаризации завершена.")
-        else:
-            logging.error("InventoryManager не установлен. Очистка не может быть выполнена.")
-
-    async def disable_editing(self, context: CallbackContext):
-        logging.info("Обновление статуса инвентаризации: редактирование отключено.")
-        self.inventory_manager.set_inventory_status_complete()
-
-    async def send_scheduled_message(self, context: CallbackContext):
-        chat_id = context.job.data['chat_id']
-        message = context.job.data['message']
-
-        try:
-            await context.bot.send_message(chat_id=chat_id, text=message)
-            logging.info(f"Сообщение отправлено в чат ID: {chat_id}")
-        except Exception as e:
-            logging.error(f"Ошибка при отправке сообщения: {e}")
-
-
-    def sync_check_events(self, context: CallbackContext):
-        # Использование asyncio для асинхронного вызова
-        asyncio.ensure_future(self.async_check_events(context))
-
-    async def async_check_events(self, context: CallbackContext):
-        try:
+    async def start(self):
+        """Запускает планировщик"""
+        self.running = True
+        while self.running:
             current_time = datetime.now()
-            logging.info("Проверка событий началась...")
-
-            # Получаем все события напрямую, так как они хранятся в виде списка
-            events = self.chat_manager.events
             
-            for event in events:
-                try:
-                    event_time_str = f"{event['date']}"  # Предполагаем, что дата и время уже в одном поле
-                    # Изменяем формат для соответствия входящей дате
-                    event_time = datetime.strptime(event_time_str, '%d.%m.%Y %H:%M')
-                    
-                    # Проверяем все уведомления для события
-                    notifications = event.get('notifications', [])
-                    for notification in notifications:
-                        # Получаем время уведомления
-                        notification_time = self.calculate_notification_time(
-                            event_time, 
-                            notification['time'], 
-                            notification['unit']
-                        )
-                        
-                        # Проверяем, пора ли отправлять уведомление
-                        time_diff = (notification_time - current_time).total_seconds()
-                        if 0 < time_diff < 60:  # Проверяем в течение минуты
-                            # Формируем сообщение уведомления
-                            message = notification['message'].format(
-                                description=event['description'],
-                                date=event['date']
-                            )
-                            
-                            # Отправляем уведомление в выбранные чаты
-                            chat_ids = event.get('chat_ids', [])
-                            for chat_id in chat_ids:
-                                try:
-                                    await context.bot.send_message(
-                                        chat_id=chat_id,
-                                        text=message
-                                    )
-                                    logging.info(f"Уведомление отправлено в чат {chat_id} для события {event['description']}")
-                                except Exception as e:
-                                    logging.error(f"Ошибка отправки уведомления в чат {chat_id}: {e}")
-
-                except Exception as e:
-                    logging.error(f"Ошибка обработки события: {e}")
-                    continue
-
-            logging.info("Проверка событий завершена.")
-        except Exception as e:
-            logging.error(f"Ошибка в async_check_events: {e}")
-
-    def calculate_notification_time(self, event_time, notification_time, unit):
-        """Вычисляет время отправки уведомления на основе настроек"""
-        if unit == 'minutes':
-            return event_time - timedelta(minutes=notification_time)
-        elif unit == 'hours':
-            return event_time - timedelta(hours=notification_time)
-        elif unit == 'days':
-            return event_time - timedelta(days=notification_time)
-        return event_time
+            # Проверяем и выполняем задачи
+            tasks_to_remove = []
+            for task_time, task in self.tasks.items():
+                if current_time >= task_time:
+                    await task()
+                    tasks_to_remove.append(task_time)
+            
+            # Удаляем выполненные задачи
+            for task_time in tasks_to_remove:
+                del self.tasks[task_time]
+                
+            await asyncio.sleep(1)  # Проверяем каждую секунду
+    
+    def stop(self):
+        """Останавливает планировщик"""
+        self.running = False
+    
+    def schedule_task(self, time: datetime, task):
+        """Добавляет новую задачу в планировщик
+        
+        Args:
+            time (datetime): Время выполнения задачи
+            task (callable): Асинхронная функция для выполнения
+        """
+        self.tasks[time] = task
+    
+    def remove_task(self, time: datetime):
+        """Удаляет задачу из планировщика
+        
+        Args:
+            time (datetime): Время задачи, которую нужно удалить
+        """
+        if time in self.tasks:
+            del self.tasks[time]
+            
+    def schedule_daily_check(self):
+        """Планирует ежедневную проверку"""
+        if self.job_queue:
+            self.job_queue.run_daily(self._daily_check, time=time(0, 0))
+    
+    def schedule_daily_update(self):
+        """Планирует ежедневное обновление"""
+        if self.job_queue:
+            self.job_queue.run_daily(self._daily_update, time=time(0, 0))
+            
+    def schedule_daily_clear_inventory(self):
+        """Планирует ежедневную очистку инвентаря"""
+        if self.job_queue:
+            self.job_queue.run_daily(self._daily_clear_inventory, time=time(0, 0))
+    
+    async def _daily_check(self, context):
+        """Выполняет ежедневную проверку"""
+        if self.mediator:
+            await self.mediator.daily_check()
+    
+    async def _daily_update(self, context):
+        """Выполняет ежедневное обновление"""
+        if self.mediator:
+            await self.mediator.daily_update()
+            
+    async def _daily_clear_inventory(self, context):
+        """Выполняет ежедневную очистку инвентаря"""
+        if self.inventory_manager:
+            await self.inventory_manager.clear_daily_inventory()
 

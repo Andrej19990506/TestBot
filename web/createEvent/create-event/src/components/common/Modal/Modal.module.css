@@ -1,0 +1,85 @@
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgb(0 0 0 / 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 500px;
+    animation: modalSlideIn 0.3s ease forwards;
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modalBtn {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.primary {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.secondary {
+    background: var(--background-color);
+    color: var(--text-color);
+}
+
+.danger {
+    background: var(--background-color);
+    color: var(--text-color);
+}
+
+.danger:hover {
+    background: #ff4d4d;
+    color: var(--white);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0%;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 100%;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .modalContent {
+        width: 95%;
+        margin: 10px;
+        padding: 20px;
+    }
+
+    .modalActions {
+        flex-direction: column;
+    }
+
+    .modalBtn {
+        width: 100%;
+        padding: 10px 16px;
+    }
+} 

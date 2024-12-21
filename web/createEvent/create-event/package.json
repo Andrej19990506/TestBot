@@ -1,26 +1,52 @@
 {
   "name": "create-event",
-  "version": "0.1.0",
-  "private": true,
-  "proxy": "http://localhost:5000",
-  "dependencies": {
-    "axios": "^1.7.9",
-    "cra-template": "1.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-scripts": "5.0.1"
-  },
+  "version": "1.0.0",
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "craco.config.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "cross-env BROWSER=none craco start",
+    "start:prod": "cross-env BROWSER=none NODE_ENV=production craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject",
+    "lint:css": "stylelint \"**/*.css\" --fix"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "dependencies": {
+    "@craco/craco": "^7.1.0",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.0",
+    "@mui/material": "^5.15.0",
+    "@popperjs/core": "^2.11.8",
+    "air-datepicker": "^3.4.0",
+    "animejs": "^3.2.2",
+    "canvas-confetti": "^1.9.3",
+    "classnames": "^2.3.2",
+    "framer-motion": "^11.15.0",
+    "postcss": "^8.4.31",
+    "postcss-preset-env": "^9.3.0",
+    "postcss-scss": "^4.0.9",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1",
+    "react-scripts": "^5.0.1",
+    "stylelint": "^15.11.0",
+    "stylelint-config-css-modules": "^4.3.0",
+    "stylelint-config-standard": "^34.0.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-transition-group": "^4.4.10",
+    "@types/yargs": "^17.0.32",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.8.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-webpack-plugin": "^4.2.0",
+    "postcss-loader": "^7.3.3",
+    "style-loader": "^3.3.3"
   },
   "browserslist": {
     "production": [

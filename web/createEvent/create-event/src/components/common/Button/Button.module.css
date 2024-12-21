@@ -1,0 +1,290 @@
+:root {
+    --primary-color: #e67e22;
+    --primary-light: #f39c12;
+    --primary-dark: #d35400;
+    --primary-transparent: rgb(230 126 34 / 10%);
+    --white: #fff;
+    --gray-light: #f5f5f5;
+    --gray: #e0e0e0;
+    --gray-dark: #666;
+    --text-color: #333;
+    --border-color: #ddd;
+    --radius: 8px;
+    --transition: all 0.2s ease;
+}
+
+/* stylelint-disable property-no-unknown */
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Размеры */
+.small {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+}
+
+.medium {
+    padding: 8px 16px;
+    font-size: 1rem;
+}
+
+.large {
+    padding: 12px 24px;
+    font-size: 1.125rem;
+}
+
+/* Варианты */
+.default {
+    background: var(--gray-light);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.primary {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+}
+
+.outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.icon {
+    padding: 8px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+}
+
+.add {
+    width: 100%;
+    padding: 8px;
+    border: 2px dashed var(--border-color);
+    background: var(--gray-light);
+    color: var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Эффекты при наведении */
+.button:hover {
+    transform: translateY(-1px);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+/* Состояния */
+.button:disabled {
+    opacity: 60%;
+    cursor: not-allowed;
+}
+
+/* Темная тема */
+[data-theme="dark"] .default {
+    background: var(--input-background);
+}
+
+[data-theme="dark"] .outline {
+    border-color: var(--primary-color);
+}
+
+/* stylelint-enable property-no-unknown */
+
+/* Ripple эффект */
+.button .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 30%);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0%;
+    }
+}
+
+.selectChats {
+    width: 100%;
+    height: 44px;
+    background: var(--background-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 2px 4px rgb(0 0 0 / 5%),
+        0 1px 2px rgb(0 0 0 / 5%),
+        inset 0 1px rgb(255 255 255 / 30%);
+}
+
+.selectChats::before {
+    content: '+';
+    font-size: 1.125rem;
+    color: var(--primary-color);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary-transparent);
+    transform-origin: center;
+    position: relative;
+    left: 0;
+}
+
+.selectChats:hover::before {
+    color: var(--white);
+    transform: rotate(225deg);
+    background: rgb(255 255 255 / 20%);
+}
+
+.selectChatsSelected::before {
+    content: '✓';
+    color: var(--white);
+    background: rgb(255 255 255 / 20%);
+    transform: scale(1) rotate(0);
+    animation: checkmarkBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    left: 0;
+}
+
+.selectChats:hover {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 4px 15px rgb(from var(--primary-color) r g b / 20%),
+        0 2px 4px rgb(0 0 0 / 10%),
+        inset 0 1px rgb(255 255 255 / 30%);
+}
+
+.selectChats:active {
+    transform: translateY(0);
+    box-shadow: 
+        0 2px 8px rgb(from var(--primary-color) r g b / 15%),
+        inset 0 1px rgb(255 255 255 / 20%);
+}
+
+.selectChats:active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at center,
+        rgb(255 255 255 / 30%) 0%,
+        transparent 60%
+    );
+    border-radius: inherit;
+    animation: pulseChat 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.selectChatsSelected {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    color: var(--white);
+    box-shadow: 
+        0 4px 15px rgb(from var(--primary-color) r g b / 20%),
+        0 2px 4px rgb(0 0 0 / 10%),
+        inset 0 1px rgb(255 255 255 / 30%);
+}
+
+@keyframes pulseChat {
+    0% {
+        transform: scale(0);
+        opacity: 50%;
+    }
+
+    50% {
+        opacity: 20%;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0%;
+    }
+}
+
+@keyframes checkmarkBounce {
+    0% {
+        transform: scale(0) rotate(-225deg);
+        opacity: 0%;
+    }
+
+    50% {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    70% {
+        transform: scale(0.9) rotate(-5deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 100%;
+    }
+}
+
+/* Темная тема */
+[data-theme="dark"] .selectChats {
+    background: var(--card-background);
+    box-shadow: 
+        0 2px 4px rgb(0 0 0 / 15%),
+        0 1px 2px rgb(0 0 0 / 10%),
+        inset 0 1px rgb(255 255 255 / 5%);
+}
+
+[data-theme="dark"] .selectChats:hover,
+[data-theme="dark"] .selectChatsSelected {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    box-shadow: 
+        0 4px 20px rgb(from var(--primary-color) r g b / 30%),
+        0 2px 8px rgb(0 0 0 / 20%),
+        inset 0 1px rgb(255 255 255 / 10%);
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .selectChats {
+        height: 40px;
+        font-size: 0.8125rem;
+        padding: 0 16px;
+        border-radius: 14px;
+    }
+
+    .selectChats::before {
+        font-size: 1rem;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+    }
+} 

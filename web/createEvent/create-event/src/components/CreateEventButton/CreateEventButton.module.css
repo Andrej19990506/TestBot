@@ -1,0 +1,52 @@
+/* @type {import('csstype').Properties} */
+
+/* @cssmodules true */
+
+/* @type css-modules */
+
+/* stylelint-disable */
+.button {
+    composes: primary from '../common/Button/Button.module.css';
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    padding: 14px 28px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+    text-transform: uppercase;
+    min-width: 200px;
+}
+/* stylelint-enable */
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgb(0 0 0 / 15%);
+}
+
+.button:active {
+    transform: translateY(0);
+    background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+    box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+.loading {
+    opacity: 80%;
+    cursor: wait;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+} 

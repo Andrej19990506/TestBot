@@ -1,14 +1,20 @@
 import React from 'react';
+import styles from './EventList.module.css';
 import EventItem from './EventItem';
 
-function EventList({ events, onDeleteEvent }) {
-  return (
-    <div className="event-list">
-      {events.map(event => (
-        <EventItem key={event.id} event={event} onDelete={onDeleteEvent} />
-      ))}
-    </div>
-  );
-}
+const EventList = ({ events, onDelete, onNotification }) => {
+    return (
+        <div className={styles.eventList}>
+            {events.map((event) => (
+                <EventItem
+                    key={event.id}
+                    event={event}
+                    onDelete={onDelete}
+                    onNotification={onNotification}
+                />
+            ))}
+        </div>
+    );
+};
 
 export default EventList;

@@ -1,0 +1,103 @@
+/* Базовые стили календаря */
+.air-datepicker {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
+    border-radius: 12px;
+    font-family: inherit;
+    padding: 12px;
+    width: 260px;
+    max-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Навигация */
+.air-datepicker-nav {
+    padding: 4px;
+    margin-bottom: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.air-datepicker-nav--title {
+    font-size: 0.8125rem;
+    padding: 2px 4px;
+}
+
+/* Ячейки календаря */
+.air-datepicker-body--cells {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    padding: 8px;
+}
+
+.air-datepicker-cell {
+    height: 24px;
+    font-size: 0.75rem;
+    line-height: 24px;
+}
+
+/* Состояния ячеек */
+.air-datepicker-cell.-selected-,
+.air-datepicker-cell.-selected-.-focus- {
+    color: #fff;
+    background: var(--primary-color);
+}
+
+.air-datepicker-cell.-current- {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* Секция времени */
+.air-datepicker-time {
+    border-top: 1px solid var(--border-color);
+    padding: 8px 12px;
+}
+
+.air-datepicker-time--current {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* Мобильные стили */
+@media (width <= 768px) {
+    .air-datepicker {
+        width: calc(100% - 32px);
+        max-width: 220px;
+    }
+}
+
+/* Добавляем стили для состояния ошибки */
+.air-datepicker.-invalid- {
+    border-color: var(--error-color);
+}
+
+.air-datepicker.-invalid- .air-datepicker-time--current {
+    color: var(--error-color);
+}
+
+.air-datepicker.-invalid- .air-datepicker-time--row input[type='range']::-webkit-slider-thumb {
+    background: var(--error-color) !important;
+}
+
+.air-datepicker.-invalid- .air-datepicker-time--row input[type='range']::-moz-range-thumb {
+    background: var(--error-color) !important;
+}
+
+/* Стили для инпута в состоянии ошибки */
+input.air-datepicker-input.-invalid- {
+    color: var(--error-color) !important;
+    border-color: var(--error-color) !important;
+}
+
+/* Стили для иконки в состоянии ошибки */
+input.air-datepicker-input.-invalid- + .datepickerIcon svg {
+    fill: var(--error-color) !important;
+}
+

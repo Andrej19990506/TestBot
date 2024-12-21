@@ -1,0 +1,104 @@
+/* Базовые стили для индикаторов */
+.stepIndicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--background-color);
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+/* Темная тема для индикаторов */
+[data-theme="dark"] .stepIndicator {
+    background: var(--background-color);
+    border-color: var(--border-color);
+}
+
+/* Состояния шагов */
+.progressStep.completed .stepIndicator {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--white);
+}
+
+.progressBarComponent {
+    width: 100%;
+    padding: 16px 0;
+    position: relative;
+}
+
+.progressContainer {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+}
+
+.progressPercentage {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    background: var(--primary-transparent);
+    padding: 4px 12px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.progressTrack {
+    position: relative;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.progressBarWrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--background-color);
+    border-radius: 2px;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .progressBarComponent {
+        padding: 12px 0;
+    }
+
+    .progressPercentage {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+    }
+
+    .progressTrack {
+        height: 32px;
+    }
+
+    .stepIndicator {
+        width: 16px;
+        height: 16px;
+        font-size: 0.7rem;
+    }
+} 

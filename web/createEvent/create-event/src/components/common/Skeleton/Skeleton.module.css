@@ -1,0 +1,122 @@
+.skeletonContainer {
+    max-width: 100vw;
+    min-height: 100vh;
+    padding: 76px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    background: var(--gray-light);
+    align-items: center;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--gray-light) 25%,
+        var(--gray) 50%,
+        var(--gray-light) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius);
+}
+
+.titleSkeleton {
+    composes: skeleton;
+    width: 200px;
+    height: 32px;
+    margin-bottom: 24px;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.descriptionColumn,
+.settingsColumn {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.labelSkeleton {
+    composes: skeleton;
+    width: 120px;
+    height: 16px;
+    margin-bottom: 8px;
+}
+
+.textAreaSkeleton {
+    composes: skeleton;
+    width: 100%;
+    height: 120px;
+}
+
+.chatSelectorSkeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chatItemSkeleton {
+    composes: skeleton;
+    height: 40px;
+    width: 100%;
+}
+
+.datePickerSkeleton {
+    composes: skeleton;
+    height: 40px;
+    width: 100%;
+}
+
+.repeatSettingsSkeleton {
+    display: flex;
+    gap: 8px;
+}
+
+.repeatOptionSkeleton {
+    composes: skeleton;
+    height: 40px;
+    flex: 1;
+}
+
+.notificationsSkeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.notificationItemSkeleton {
+    composes: skeleton;
+    height: 60px;
+    width: 100%;
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .repeatSettingsSkeleton {
+        flex-direction: column;
+    }
+} 

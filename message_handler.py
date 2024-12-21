@@ -7,7 +7,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 from user_states import set_user_state, get_user_state
 from utils.date_parser import parse_event_input, calculate_delay
-from chat_manager import ChatManager
+from utils.chat_manager import ChatManager
 
 EVENTS_FILE_PATH = 'events.json'
 if not os.path.exists(EVENTS_FILE_PATH):
@@ -83,21 +83,24 @@ class CustomMessageHandler:
         return InlineKeyboardMarkup(keyboard)
 
     async def process_start(self, update: Update, context: CallbackContext) -> None:
-        query = update.callback_query  # Получаем query из update
+        query = update.callback_query
         user_id = query.from_user.id
         await query.answer()
         
         logging.debug(f"Вызван process_start для user_id: {user_id}")
 
-        keyboard = [
-            [InlineKeyboardButton("Добавить событие", web_app={'url': 'https://6324-176-215-122-184.ngrok-free.app'})],
-            [InlineKeyboardButton("Показать события", callback_data='show_events')],
-            [InlineKeyboardButton("Инвентаризация", callback_data='inventory')],
-            [InlineKeyboardButton("Помощь", callback_data='help')]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
+        # Используем URL без index.html
+        webapp_url = 'https://eef3-176-215-122-184.ngrok-free.app'
+        
         try:
+            keyboard = [
+                [InlineKeyboardButton("Добавить событие", web_app={'url': webapp_url})],
+                [InlineKeyboardButton("Показать события", callback_data='show_events')],
+                [InlineKeyboardButton("Инвентаризация", callback_data='inventory')],
+                [InlineKeyboardButton("Помощь", callback_data='help')]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+
             await query.edit_message_text(
                 text='Выберите действие:',
                 reply_markup=reply_markup
@@ -111,7 +114,7 @@ class CustomMessageHandler:
 
     async def add_event(self, update: Update, context: CallbackContext) -> None:
         user_id = update.effective_user.id
-        logging.debug(f"Начало процесса добавления события для пользователя {user_id}")
+        logging.debug(f"Начало процесса добавления события для пользоват��ля {user_id}")
 
         current_state = get_user_state(user_id)
         logging.warning(f"Текущее состояние для пользователя {user_id}: {current_state}")
@@ -204,7 +207,7 @@ class CustomMessageHandler:
             if user_events:  
                 await self.show_events(query, context)
             else:
-                # Если нет событий, удаляем пользователя из словаря событий
+                # Если нет событий, удаляем пользовател из словаря событий
                 if user_id in self.chat_manager.events:  # Перед удалением убедитесь, что ключ существует
                     del self.chat_manager.events[user_id]
                 await self.process_start(update, context)
@@ -234,7 +237,7 @@ class CustomMessageHandler:
                 reply_markup=reply_markup
             )
         else:
-            # Добавляем кнопки для добавления события и возвращения в главное меню
+            # Добавляем кнопки для добавления со��ытия и возвращения в главное меню
             keyboard.append([InlineKeyboardButton("Добавить событие", callback_data='add_event')])
             keyboard.append([InlineKeyboardButton("Главное меню", callback_data='process_start')])
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -385,6 +388,6 @@ class CustomMessageHandler:
             await self.add_event(update, context)
         else:
             await update.message.reply_text(
-                "Пожалуйста, воспользуйтесь меню для навигации или введите команду /help для получения помощи."
+                "Пожалуйста, воспользуйтесь меню для навигации или вве��ите команду /help для получения помощи."
             )
 

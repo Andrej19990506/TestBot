@@ -1,0 +1,181 @@
+.errorScreen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background-color);
+    padding: 1rem;
+    min-height: 100vh;
+    transition: background-color 0.3s ease;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    background: var(--card-background);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
+    transition: all 0.3s ease;
+}
+
+.iconWrapper {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--primary-transparent);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.icon {
+    width: 48px;
+    height: 48px;
+}
+
+.icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.title {
+    color: var(--text-color);
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.message {
+    color: var(--gray-dark);
+    font-size: clamp(0.875rem, 3vw, 1rem);
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.retryButton {
+    padding: clamp(10px, 3vw, 12px) clamp(20px, 5vw, 24px);
+    border: none;
+    border-radius: var(--radius);
+    background: var(--primary-color);
+    color: var(--white);
+    font-size: clamp(0.875rem, 3vw, 1rem);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 200px;
+}
+
+.retryButton:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--primary-transparent);
+}
+
+.retryButton:active {
+    transform: translateY(0);
+}
+
+/* Темная тема */
+[data-theme="dark"] .errorContainer {
+    background: var(--card-background);
+    box-shadow: 0 4px 6px rgb(0 0 0 / 20%);
+}
+
+[data-theme="dark"] .iconWrapper {
+    background: var(--primary-transparent);
+    box-shadow: 0 0 20px var(--primary-transparent);
+}
+
+[data-theme="dark"] .title {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .message {
+    color: var(--gray-dark);
+}
+
+[data-theme="dark"] .retryButton {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+}
+
+/* Адаптивность */
+@media (width >= 0) and (width <= 768px) {
+    .errorContainer {
+        padding: 1.5rem;
+        gap: 1.25rem;
+    }
+
+    .iconWrapper {
+        width: 60px;
+        height: 60px;
+    }
+
+    .icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Поддержка маленьких экранов */
+@media (width >= 0) and (width <= 360px) {
+    .errorContainer {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .iconWrapper {
+        width: 50px;
+        height: 50px;
+    }
+
+    .icon {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* Поддержка ландшафтной ориентации на мобильных */
+@media (height >= 0) and (height <= 500px) {
+    .errorContainer {
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+}
+
+/* Поддержка высоких разрешений */
+@media (resolution >= 192dpi) {
+    .errorContainer {
+        box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+    }
+}
+
+.retryButton.retrying {
+    background: var(--gray);
+    cursor: wait;
+}
+
+.retryInfo {
+    font-size: 0.875rem;
+    color: var(--gray-dark);
+    margin-top: 0.5rem;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.retrying .icon {
+    animation: pulse 2s infinite;
+} 

@@ -1,0 +1,44 @@
+.pageWrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background-color);
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 90px auto 70px;
+    padding: 0 16px;
+    flex: 1;
+}
+
+.title {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin-bottom: 24px;
+}
+
+.eventGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+/* Адаптивность */
+@media (width >= 0) and (width <= 768px) {
+    .container {
+        margin: 80px auto 60px;
+        padding: 0 12px;
+    }
+
+    .title {
+        font-size: 1.25rem;
+        margin-bottom: 16px;
+    }
+
+    .eventGrid {
+        gap: 16px;
+        grid-template-columns: 1fr;
+    }
+} 

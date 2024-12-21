@@ -2,6 +2,8 @@ import json
 import os
 import logging
 import copy
+from utils.chat_manager import ChatManager  # Обновляем если используется
+
 class Mediator:
     def __init__(self, inventory_file_path="inventory.json"):  # Задаем путь по умолчанию
         self.inventory_manager = None
@@ -85,7 +87,7 @@ class Mediator:
         return data
     
     def load_template(self, template_file_path):
-        """Загружает шаблонный инвентарь отдельно."""
+        """Загружает шаблонный инвентарь отде��ьно."""
         try:
             with open(template_file_path, 'r', encoding='utf-8') as template_file:
                 data = json.load(template_file)

@@ -1,0 +1,48 @@
+.notificationIcon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gray-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    color: var(--text-color);
+}
+
+.notificationIcon:hover {
+    background: var(--primary-transparent);
+    color: var(--primary-color);
+}
+
+.notificationIcon:hover svg {
+    transform: scale(1.1);
+}
+
+.notificationIcon:active {
+    transform: scale(0.95);
+}
+
+.notificationCount {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: var(--primary-color);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notificationIcon:hover .notificationCount {
+    transform: scale(1.1);
+} 

@@ -1,0 +1,333 @@
+.pageWrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background-color);
+}
+
+.container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    width: 100%;
+    height: calc(100vh - var(--header-height) - var(--footer-height) - 55px);
+    margin: 15px 0;
+}
+
+/* Общие стили для колонок */
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    background: var(--card-background);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgb(0 0 0 / 5%),
+                0 2px 10px rgb(0 0 0 / 5%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: visible;
+    height: 100%;
+}
+
+.columnContent {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+}
+
+/* Левая колонка */
+.textareaSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.bottomSection {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: auto;
+}
+
+/* Правая колонка */
+.rightColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dateTimeSection {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: var(--gray-light);
+    border-radius: 16px;
+}
+
+.datePickerWrapper {
+    width: 100%;
+    position: relative;
+}
+
+.repeatSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: var(--gray-light);
+    border-radius: 16px;
+}
+
+/* Уведомления */
+.notificationsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+    background: var(--gray-light);
+    border-radius: 16px;
+}
+
+.notificationsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 120px;
+    overflow-y: auto;
+    margin-bottom: 8px;
+}
+
+.notificationsContainer::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notificationsContainer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.notificationsContainer::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 3px;
+}
+
+.notificationsContainer::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-color);
+}
+
+/* Чаты */
+.chatsWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.chatsContainer {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    margin-bottom: 8px;
+    background: var(--card-background);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 -4px 30px rgb(0 0 0 / 15%);
+    border: 1px solid var(--border-color);
+    z-index: 10;
+}
+
+.chatsContainer:hover {
+    box-shadow: 0 -6px 40px rgb(0 0 0 / 20%);
+}
+
+/* Кнопки */
+.addNotificationBtn {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.addNotificationBtn:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-transparent);
+}
+
+.saveNotificationBtn {
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+    width: 100%;
+}
+
+.saveNotificationBtn:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+/* Темная тема */
+[data-theme="dark"] .dateTimeSection,
+[data-theme="dark"] .repeatSection,
+[data-theme="dark"] .notificationsSection {
+    background: var(--card-background);
+}
+
+[data-theme="dark"] .chatsContainer {
+    box-shadow: 0 -4px 30px rgb(0 0 0 / 35%);
+    border-color: var(--border-color-dark);
+    background: rgb(from var(--card-background) r g b / 95%);
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .container {
+        padding: 12px;
+    }
+
+    .columns {
+        gap: 16px;
+    }
+
+    .column {
+        padding: 16px;
+    }
+
+    .dateTimeSection,
+    .repeatSection,
+    .notificationsSection {
+        padding: 16px;
+    }
+
+    .chatsContainer {
+        padding: 12px;
+    }
+}
+
+/* Мобильная версия */
+@media (width <= 480px) {
+    .columns {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        margin: 0;
+    }
+
+    .columnContent {
+        margin: 0;
+        padding: 0;
+        gap: 16px;
+    }
+
+    .bottomSection {
+        position: sticky;
+        bottom: 0;
+        background: var(--card-background);
+        padding: 12px;
+        margin: 0 -16px -16px;
+        border-top: 1px solid var(--border-color);
+        gap: 12px;
+        z-index: 2;
+    }
+}
+
+/* Мобильная версия (340px) */
+@media (width <= 340px) {
+    .container {
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - var(--header-height) - var(--footer-height));
+    }
+
+    .mobileStepIndicator {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 0;
+    }
+
+    .stepDot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--gray-light);
+        transition: all 0.3s ease;
+    }
+
+    .stepDot.active {
+        background: var(--primary-color);
+        transform: scale(1.2);
+    }
+
+    .stepContent {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+        background: var(--card-background);
+        border-radius: 12px;
+        margin: 8px 0;
+    }
+
+    .stepNavigation {
+        display: flex;
+        gap: 8px;
+        padding: 8px 0;
+    }
+
+    .prevButton,
+    .nextButton {
+        flex: 1;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .prevButton {
+        background: var(--gray-light);
+        color: var(--text-color);
+        border: none;
+    }
+
+    .nextButton {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+    }
+
+    .prevButton:disabled,
+    .nextButton:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}

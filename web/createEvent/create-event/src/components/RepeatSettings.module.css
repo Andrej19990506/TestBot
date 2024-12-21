@@ -1,0 +1,277 @@
+.repeatSettings {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+}
+
+.repeatTypeSelector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.repeatTypeButton {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.repeatTypeButton:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-transparent);
+}
+
+.repeatTypeButton.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.weekdaysSelector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.weekdayButton {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.875rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.weekdayButton:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-transparent);
+}
+
+.weekdayButton.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.monthDaySelector {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.monthDayInput {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.875rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.monthDayInput:hover {
+    border-color: var(--primary-color);
+}
+
+.monthDayInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgb(from var(--primary-color) / 95%);
+}
+
+.monthDayInput::-webkit-inner-spin-button,
+.monthDayInput::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+.monthDayInput[type='number'] {
+    appearance: textfield;
+}
+
+.monthDayLabel {
+    color: var(--text-color);
+    font-size: 0.875rem;
+}
+
+.monthDayInput::placeholder {
+    color: currentcolor;
+    opacity: 50%;
+}
+
+.repeatTypeDescription {
+    font-size: 0.875rem;
+    color: var(--text-color);
+    opacity: 75%;
+    margin-top: 8px;
+}
+
+.repeatOptionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: rgb(0 0 0 / 5%);
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.repeatOptionsContainer.hidden {
+    height: 0;
+    padding: 0;
+    opacity: 0%;
+    pointer-events: none;
+    margin: 0;
+}
+
+.repeatOptionsContainer.visible {
+    height: auto;
+    opacity: 100%;
+    pointer-events: auto;
+    margin-top: 16px;
+}
+
+.repeatOptionsWrapper {
+    background: rgb(0 0 0 / 5%);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Темная тема */
+[data-theme="dark"] .repeatOptionsContainer,
+[data-theme="dark"] .repeatOptionsWrapper {
+    background: rgb(255 255 255 / 5%);
+}
+
+[data-theme="dark"] .repeatTypeButton,
+[data-theme="dark"] .weekdayButton,
+[data-theme="dark"] .monthDayInput {
+    background: var(--card-background);
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .repeatTypeSelector {
+        flex-direction: column;
+    }
+
+    .repeatTypeButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .weekdaysSelector {
+        justify-content: center;
+    }
+
+    .monthDaySelector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .monthDayInput {
+        width: 100%;
+    }
+}
+
+/* Стили для кнопок выбора дней */
+.daySelectButton {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.daySelectButton:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-transparent);
+}
+
+.daySelectButton.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Стили для селекта дней месяца */
+.monthDaySelect {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.monthDaySelect:hover {
+    border-color: var(--primary-color);
+}
+
+.monthDaySelect:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-transparent);
+}
+
+/* Стили для опций в селекте */
+.monthDaySelect option {
+    padding: 8px;
+    font-size: 0.875rem;
+    background: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Темная тема для селекта */
+[data-theme="dark"] .monthDaySelect {
+    background-color: var(--card-background);
+}
+
+[data-theme="dark"] .monthDaySelect option {
+    background-color: var(--card-background);
+}
+
+/* Адаптивность для селекта */
+@media (width <= 768px) {
+    .monthDaySelect {
+        width: 100%;
+    }
+} 

@@ -1,0 +1,21 @@
+.create-event-button {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    color: var(--white);
+    padding: 12px 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+}
+
+.create-event-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgb(0 0 0 / 15%);
+}
+
+.create-event-button:active {
+    transform: translateY(0);
+}
+
+.create-event-button.loading {
+    opacity: 80%;
+    cursor: wait;
+} 

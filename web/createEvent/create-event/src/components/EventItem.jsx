@@ -1,48 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import EventList from './components/EventList';
-import CreateEvent from './components/CreateEvent';
-import Notification from './components/Notification';
+import React from 'react';
+import styles from './EventItem.module.css';
+import DeleteButton from './common/DeleteButton';
+import NotificationIcon from './common/NotificationIcon/NotificationIcon';
 
-function App() {
-  const [events, setEvents] = useState([]);
-  const [notification, setNotification] = useState(null);
+const EventItem = ({ event, onDelete, onNotification }) => {
+    const { id, description, date, notifications = [] } = event;
 
-  useEffect(() => {
-    // Загрузка событий при монтировании компонента
-    fetchEvents();
-  }, []);
+    return (
+        <div className={styles.eventItem}>
+            <div className={styles.eventHeader}>
+                <div className={styles.eventInfo}>
+                    <div className={styles.eventDescription}>
+                        {description}
+                    </div>
+                    <div className={styles.eventMeta}>
+                        <span className={styles.badge}>
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z" fill="currentColor"/>
+                            </svg>
+                            {date}
+                        </span>
+                    </div>
+                </div>
+                <div className={styles.actions}>
+                    <NotificationIcon 
+                        count={notifications.length}
+                        onClick={() => onNotification(event)}
+                    />
+                    <DeleteButton 
+                        onClick={() => onDelete(id)}
+                        size="small"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
 
-  const fetchEvents = async () => {
-    try {
-      const response = await fetch('/get_events');
-      if (!response.ok) throw new Error('Ошибка при загрузке событий');
-      const data = await response.json();
-      setEvents(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleDeleteEvent = async (eventId) => {
-    try {
-      const response = await fetch(`/delete_event/${eventId}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Ошибка при удалении события');
-      setEvents(events.filter(event => event.id !== eventId));
-      setNotification({ message: 'Событие успешно удалено', type: 'success' });
-    } catch (error) {
-      console.error(error);
-      setNotification({ message: 'Ошибка при удалении события', type: 'error' });
-    }
-  };
-
-  return (
-    <div className="App">
-      <h1>Система управления событиями</h1>
-      <CreateEvent onEventCreated={fetchEvents} />
-      <EventList events={events} onDeleteEvent={handleDeleteEvent} />
-      {notification && <Notification message={notification.message} type={notification.type} />}
-    </div>
-  );
-}
-
-export default App;
+export default EventItem;

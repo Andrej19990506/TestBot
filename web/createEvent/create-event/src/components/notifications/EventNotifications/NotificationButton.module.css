@@ -1,0 +1,58 @@
+/* @type {import('csstype').Properties} */
+
+/* @cssmodules true */
+
+/* @type css-modules */
+
+/* stylelint-disable property-no-unknown */
+.baseButton {
+    composes: button from '../../common/Button/Button.module.css';
+}
+
+/* Стили для кнопки добавления */
+.addButton {
+    composes: add from '../../common/Button/Button.module.css';
+}
+
+/* Стили для кнопки удаления */
+.deleteButton {
+    composes: icon from '../../common/Button/Button.module.css';
+}
+
+/* Стили для иконок */
+.buttonIcon {
+    font-size: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+    transform-origin: center;
+} 
+
+/* Дополнительные стили и эффекты */
+.addButton:hover {
+    background: var(--primary-transparent);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.deleteButton:hover {
+    background: var(--primary-transparent);
+    color: var(--primary-color);
+}
+
+/* stylelint-enable property-no-unknown */
+
+@media (width <= 480px) {
+    .addNotificationBtn {
+        padding: 10px;
+        font-size: 0.8125rem;
+    }
+
+    .addNotificationBtn svg {
+        width: 16px;
+        height: 16px;
+    }
+}

@@ -1,0 +1,196 @@
+.event-notifications-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.notifications-container {
+    background: var(--gray-light);
+    background: linear-gradient(145deg, var(--gray-light) 0%, #fff 100%);
+    border-radius: var(--radius);
+    padding: 0;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgb(0 0 0 / 5%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    margin: 4px 0;
+    position: relative;
+    z-index: 1;
+    opacity: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scaleY(1);
+    transform-origin: top;
+    scroll-behavior: smooth;
+}
+
+/* Добавляем скролл когда больше 3 уведомлений */
+.notifications-container.has-scroll .notifications-list {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+/* Эффекты размытия для скролла */
+.notifications-container::before,
+.notifications-container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 40px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0%;
+    transition: opacity 0.3s ease;
+}
+
+.notifications-container::before {
+    top: 0;
+    background: linear-gradient(to bottom,
+        var(--gray-light) 0%,
+        var(--gray-light) 40%,
+        rgb(245 245 245 / 80%) 60%,
+        transparent 100%
+    );
+}
+
+.notifications-container::after {
+    bottom: 0;
+    background: linear-gradient(to top,
+        var(--gray-light) 0%,
+        var(--gray-light) 40%,
+        rgb(245 245 245 / 80%) 60%,
+        transparent 100%
+    );
+}
+
+/* Показываем эффекты размытия только при скролле */
+.notifications-container.has-scroll::before,
+.notifications-container.has-scroll::after {
+    opacity: 100%;
+}
+
+.notification-item {
+    display: grid;
+    grid-template-columns: 140px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    background: var(--background-color);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.notification-item:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.notification-time {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.notification-time:hover {
+    border-color: var(--primary-color);
+}
+
+.notification-message {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    transition: all 0.2s ease;
+}
+
+.notification-message:hover {
+    border-color: var(--primary-color);
+}
+
+.notification-delete-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: var(--background-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-color);
+}
+
+.notification-delete-btn:hover {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.notifications-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.cancel-btn,
+.save-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.cancel-btn {
+    background: var(--background-color);
+    color: var(--text-color);
+}
+
+.save-btn {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.cancel-btn:hover {
+    background: var(--gray);
+}
+
+.save-btn:hover {
+    background: var(--primary-light);
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .notification-item {
+        grid-template-columns: 1fr;
+    }
+
+    .notification-delete-btn {
+        width: 100%;
+        height: 36px;
+    }
+} 

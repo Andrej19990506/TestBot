@@ -1,0 +1,89 @@
+.eventList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.eventItem {
+    position: relative;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 16px;
+    background: var(--white);
+}
+
+.eventItem:hover {
+    transform: translateX(8px);
+    box-shadow: 0 6px 12px rgb(0 0 0 / 10%);
+}
+
+.eventHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.eventDescription {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+.eventActions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--background-color);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.badge svg {
+    width: 16px;
+    height: 16px;
+    color: var(--primary-color);
+}
+
+/* Темная тема */
+[data-theme="dark"] .eventItem {
+    background: var(--card-background);
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .eventList {
+        grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .eventItem {
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    .eventHeader {
+        gap: 12px;
+    }
+
+    .eventDescription {
+        font-size: 1rem;
+    }
+} 

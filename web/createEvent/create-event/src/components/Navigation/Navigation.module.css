@@ -1,0 +1,90 @@
+.navigation {
+    flex: 1;
+    position: relative;
+}
+
+.navLinks {
+    display: flex;
+    justify-content: flex-start;
+    gap: 32px;
+    margin: 0;
+}
+
+.navLink {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    position: relative;
+}
+
+.navLink:hover {
+    background-color: var(--hover-color);
+}
+
+.navLink.active {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.navLink.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.navText {
+    font-weight: 500;
+    position: relative;
+}
+
+/* Адаптивность */
+@media (width >= 0) and (width <= 768px) {
+    .navLinks {
+        gap: 16px;
+    }
+
+    .navLink {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .navText {
+        display: none;
+    }
+}
+
+/* Темная тема */
+[data-theme="dark"] .navLink.active {
+    background: var(--primary-color);
+}
+
+[data-theme="dark"] .navLink:hover {
+    background: var(--hover-color-dark);
+} 

@@ -1,0 +1,82 @@
+.eventItem {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--white);
+    border-radius: var(--radius);
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
+    transition: var(--transition);
+}
+
+.eventHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.eventInfo {
+    flex: 1;
+}
+
+.eventDescription {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+.eventMeta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--gray-light);
+    font-size: 0.875rem;
+    color: var(--gray-dark);
+}
+
+.badge svg {
+    width: 16px;
+    height: 16px;
+    color: var(--primary-color);
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Темная тема */
+[data-theme="dark"] .eventItem {
+    background: var(--card-background);
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .eventItem {
+        padding: 12px;
+    }
+
+    .eventHeader {
+        gap: 12px;
+    }
+
+    .eventDescription {
+        font-size: 0.9375rem;
+    }
+
+    .badge {
+        font-size: 0.8125rem;
+    }
+} 

@@ -1,0 +1,138 @@
+.notification-item {
+    display: grid;
+    grid-template-columns: 140px 1fr 32px;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    background: var(--background-color);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.notification-item *,
+.notification-item *::before,
+.notification-item *::after {
+    box-sizing: border-box;
+}
+
+.notification-time {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    color: var(--text-color);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px;
+    padding-right: 32px;
+    width: 100%;
+    min-width: 0;
+}
+
+.notification-message {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-color);
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    color: var(--text-color);
+    width: 100%;
+    min-width: 0;
+}
+
+.notification-time:hover,
+.notification-message:hover {
+    border-color: var(--primary-color);
+}
+
+.notification-time:focus,
+.notification-message:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-transparent);
+}
+
+.deleteButtonWrapper {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteIcon {
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    transition: all 0.2s ease;
+    color: var(--text-color);
+    background: var(--gray-light);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.deleteIcon:hover {
+    background: var(--primary-transparent);
+    color: var(--primary-color);
+    transform: translate(-50%, -50%) rotate(90deg) scale(1.1);
+}
+
+/* Адаптивность */
+@media (width <= 768px) {
+    .notification-item {
+        grid-template-columns: 1fr 32px;
+    }
+
+    .notification-time {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (width <= 480px) {
+    .notification-item {
+        grid-template-columns: 1fr 32px;
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .notification-time {
+        grid-column: 1 / -1;
+        padding: 8px;
+        font-size: 0.8125rem;
+    }
+
+    .notification-message {
+        padding: 8px;
+        font-size: 0.8125rem;
+    }
+
+    .deleteButtonWrapper {
+        width: 20px;
+        height: 20px;
+    }
+
+    .deleteIcon {
+        font-size: 14px;
+        width: 18px;
+        height: 18px;
+    }
+} 

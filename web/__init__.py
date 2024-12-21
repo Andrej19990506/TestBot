@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
+import os
 
 def create_app():
     app = Flask(__name__,
@@ -7,10 +8,21 @@ def create_app():
         static_folder='static',
         template_folder='templates'
     )
-    CORS(app)
     
-    # Импортируем и регистрируем маршруты
-    from web.app import init_routes
-    init_routes(app)
+    # Настройка CORS для режима разработки
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": ["http://localhost:3000"],
+            "methods": ["GET", "POST", "PUT", "DELETE"],
+            "allow_headers": ["Content-Type"]
+        }
+    })
     
-    return app 
+    # Настройка конфигурации
+    app.config.from_object('config.Config')
+    
+    # Импортируем и регистрируем маршруты API
+    from web.app import bp as routes_bp
+    app.register_blueprint(routes_bp, url_prefix='/api')
+    
+    return app

@@ -1,0 +1,60 @@
+.notifications-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Список уведомлений */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Элемент уведомления */
+.notification-item {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    background: var(--background-color);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+}
+
+/* Селект времени */
+.notification-time-select {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--background-color);
+}
+
+/* Поле сообщения */
+.notification-message {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--background-color);
+}
+
+/* Кнопка добавления уведомления */
+.add-notification-btn {
+    align-self: flex-start;
+    padding: 8px 16px;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-notification-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-transparent);
+} 

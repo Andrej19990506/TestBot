@@ -1,0 +1,66 @@
+.notificationsList {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding-right: 5px;
+}
+
+.notificationsContainer {
+    position: relative;
+    max-height: 0;
+    opacity: 0%;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    border-radius: var(--radius);
+    background: var(--gray-light);
+    margin-top: 0;
+}
+
+.hasNotifications {
+    max-height: 300px;
+    opacity: 100%;
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.notificationsActions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 12px;
+}
+
+.cancelBtn,
+.saveBtn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.cancelBtn {
+    background: var(--background-color);
+    color: var(--text-color);
+}
+
+.saveBtn {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.cancelBtn:hover {
+    background: var(--gray);
+}
+
+.saveBtn:hover {
+    background: var(--primary-light);
+} 
