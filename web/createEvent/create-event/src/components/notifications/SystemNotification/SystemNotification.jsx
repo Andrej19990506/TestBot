@@ -3,16 +3,27 @@ import './SystemNotification.css';
 
 function SystemNotification({ message, type, duration = 3000 }) {
     const [isVisible, setIsVisible] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
 
     useEffect(() => {
         if (message) {
-            setIsVisible(true);
-            const timer = setTimeout(() => setIsVisible(false), duration);
-            return () => clearTimeout(timer);
+            setShouldRender(true);
+            // Небольшая задержка перед показом для плавной анимации
+            setTimeout(() => setIsVisible(true), 100);
+
+            const hideTimer = setTimeout(() => {
+                setIsVisible(false);
+                // Удаляем компонент после завершения анимации скрытия
+                setTimeout(() => setShouldRender(false), 500);
+            }, duration);
+
+            return () => {
+                clearTimeout(hideTimer);
+            };
         }
     }, [duration, message]);
 
-    if (!message) return null;
+    if (!shouldRender) return null;
 
     return (
         <div className={`system-notification ${type} ${isVisible ? 'visible' : ''}`}>
@@ -21,7 +32,10 @@ function SystemNotification({ message, type, duration = 3000 }) {
                 {type === 'success' && <span className="notification-icon">✅</span>}
                 <span className="notification-message">{message}</span>
             </div>
-            <div className="notification-progress" style={{ animationDuration: `${duration}ms` }} />
+            <div 
+                className="notification-progress" 
+                style={{ animationDuration: `${duration}ms` }} 
+            />
         </div>
     );
 }

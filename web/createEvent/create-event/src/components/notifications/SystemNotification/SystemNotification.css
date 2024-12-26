@@ -1,19 +1,21 @@
 .system-notification {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
     min-width: 300px;
     padding: 16px;
     border-radius: 8px;
     background: white;
     box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-    transform: translateX(120%);
-    transition: transform 0.3s ease;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
 }
 
 .system-notification.visible {
-    transform: translateX(0);
+    top: 20px;
+    opacity: 1;
 }
 
 .system-notification.success {
@@ -37,6 +39,7 @@
 .notification-message {
     color: #333;
     font-size: 14px;
+    line-height: 1.4;
 }
 
 .notification-progress {
@@ -46,7 +49,7 @@
     height: 3px;
     background: #ddd;
     width: 100%;
-    animation: progress linear forwards;
+    animation: progress 5s linear forwards;
 }
 
 @keyframes progress {
@@ -54,11 +57,19 @@
     to { width: 0%; }
 }
 
+[data-theme="dark"] .system-notification {
+    background: #1a1a1a;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+}
+
+[data-theme="dark"] .notification-message {
+    color: #fff;
+}
+
 @media (width <= 768px) {
     .system-notification {
         min-width: auto;
         width: calc(100% - 40px);
-        top: auto;
-        bottom: 20px;
+        max-width: 400px;
     }
 } 

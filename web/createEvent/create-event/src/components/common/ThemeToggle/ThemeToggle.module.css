@@ -1,0 +1,85 @@
+.themeToggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: var(--card-background);
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.themeToggle:hover {
+    background: var(--hover-overlay);
+    transform: var(--hover-transform);
+    box-shadow: var(--shadow-md);
+}
+
+.themeToggle:active {
+    transform: var(--active-transform);
+}
+
+.iconContainer {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconWrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center;
+    will-change: transform, opacity;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    color: var(--primary-color);
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 10%));
+}
+
+/* Темная тема */
+[data-theme="dark"] .themeToggle {
+    background: var(--card-background);
+    box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .themeToggle:hover {
+    background: var(--hover-overlay);
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .icon {
+    filter: drop-shadow(0 2px 4px rgb(0 0 0 / 20%));
+}
+
+/* Адаптивность */
+@media (width >= 480px) {
+    .themeToggle {
+        width: 36px;
+        height: 36px;
+    }
+
+    .iconContainer {
+        width: 20px;
+        height: 20px;
+    }
+
+    .icon {
+        width: 16px;
+        height: 16px;
+    }
+} 

@@ -4,9 +4,10 @@ import requests
 from config import bot_token
 from datetime import datetime
 import traceback
-from utils.chat_manager import ChatManager
+from utils.bot_types import BotInterface
+import json
 
-class TelegramBot:
+class TelegramBot(BotInterface):
     def __init__(self, token):
         self.token = token
         self.bot = Bot(token=token)
@@ -55,15 +56,43 @@ class TelegramBot:
             logging.error(f"Ошибка при отправке события в Telegram: {e}\n{traceback.format_exc()}")
             return False
 
-    def get_chat_id(self, message):
-        """Получаем chat_id из полученного сообщения или обновлений."""
-        url = f"https://api.telegram.org/bot{self.token}/getUpdates"
-        response = requests.get(url)
-        if response.status_code == 200:
-            updates = response.json().get('result', [])
-            for update in updates:
-                if 'message' in update and update['message'].get('text') == message:
-                    return update['message']['chat']['id']
-        else:
-            logging.error(f"Ошибка при получении обновлений: {response.status_code}")
-        return None
+    async def send_notification(self, chat_name, message, is_repeat=False):
+        """Отправка уведомления в чат"""
+        try:
+            with open('chat_ids.json', 'r', encoding='utf-8') as f:
+                chat_ids = json.load(f)
+                
+            if chat_name in chat_ids:
+                chat_id = chat_ids[chat_name]
+                
+                # Добавляем метку для повторяющихся уведомлений
+                if is_repeat:
+                    message = "🔄 " + message
+                    
+                await self.bot.send_message(
+                    chat_id=chat_id,
+                    text=message,
+                    parse_mode='HTML'
+                )
+                logging.info(f"✅ Notification sent to {chat_name}")
+            else:
+                raise Exception(f"Chat {chat_name} not found in chat_ids.json")
+                
+        except Exception as e:
+            logging.error(f"❌ Error sending notification to {chat_name}: {str(e)}")
+            raise
+
+    async def get_chat_id(self, chat_name):
+        """Получение chat_id по имени чата"""
+        try:
+            with open('chat_ids.json', 'r', encoding='utf-8') as f:
+                chat_ids = json.load(f)
+                
+            if chat_name in chat_ids:
+                return chat_ids[chat_name]
+            else:
+                raise Exception(f"Chat {chat_name} not found in chat_ids.json")
+                
+        except Exception as e:
+            logging.error(f"❌ Error getting chat_id for {chat_name}: {str(e)}")
+            raise

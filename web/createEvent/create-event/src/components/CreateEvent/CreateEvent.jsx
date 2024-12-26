@@ -1,303 +1,277 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Header from '../common/Header/Header';
-import Footer from '../common/Footer/Footer';
-import TextArea from '../common/Textarea/TextArea';
-import ChatSelector from '../ChatSelector';
-import DatePicker from '../DatePicker';
-import Button from '../common/Button/Button';
-import RepeatSettings from '../RepeatSettings';
-import { AddNotificationButton } from '../notifications/EventNotifications/NotificationButton';
-import NotificationItem from '../notifications/EventNotifications/NotificationItem';
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './CreateEvent.module.css';
 import MobileLayout from '../layouts/MobileLayout';
+import DesktopLayout from '../layouts/DesktopLayout';
+import { useTheme } from '../../hooks/useTheme';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
+import TextArea from '../common/Textarea/TextArea';
+import DateTimePicker from '../DateTimePicker/DateTimePicker';
+import RepeatSettings from '../RepeatSettings';
+import NotificationManager from '../notifications/NotificationManager';
+import ChatSelector from '../ChatSelector';
+import { useApi } from '../../hooks/useApi';
+import SuccessScreen from '../common/SuccessScreen/SuccessScreen';
+import { AnimatePresence } from 'framer-motion';
 
 const CreateEvent = () => {
+    const navigate = useNavigate();
+    const [currentStep, setCurrentStep] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
     const [description, setDescription] = useState('');
-    const [selectedChats, setSelectedChats] = useState([]);
-    const [isChatsOpen, setIsChatsOpen] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('');
+    const { theme } = useTheme();
+    const isMobile = useMediaQuery('(max-width: 768px)');
+    const [selectedDate, setSelectedDate] = useState(null);
     const [repeatType, setRepeatType] = useState('none');
     const [selectedWeekdays, setSelectedWeekdays] = useState([]);
     const [monthDay, setMonthDay] = useState(null);
-    const [notification, setNotification] = useState(null);
-    const [isAddingNotification, setIsAddingNotification] = useState(false);
-    const [currentNotification, setCurrentNotification] = useState(null);
-    const [isMobileSettingsOpen, setIsMobileSettingsOpen] = useState(false);
-    
-    const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 340);
+    const [selectedChats, setSelectedChats] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+    const [errors, setErrors] = useState({
+        description: false,
+        date: false,
+        notifications: false,
+        chats: false
+    });
+    const [isSuccess, setIsSuccess] = useState(false);
+    const { createEvent: apiCreateEvent } = useApi();
 
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobileView(window.innerWidth <= 340);
-        };
+    const formatDateForApi = (date) => {
+        if (!date) return null;
+        return new Date(date).toISOString().slice(0, 16).replace('T', ' ');
+    };
 
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+    const validateStep = useCallback((step) => {
+        const newErrors = { ...errors };
+        let isValid = true;
+
+        switch (step) {
+            case 1:
+                if (!description.trim()) {
+                    newErrors.description = true;
+                    isValid = false;
+                } else {
+                    newErrors.description = false;
+                }
+                break;
+            case 2:
+                if (!selectedDate) {
+                    newErrors.date = true;
+                    isValid = false;
+                } else {
+                    newErrors.date = false;
+                }
+                break;
+            case 4:
+                if (notifications.length === 0) {
+                    newErrors.notifications = true;
+                    isValid = false;
+                } else {
+                    newErrors.notifications = false;
+                }
+                break;
+            case 5:
+                if (selectedChats.length === 0) {
+                    newErrors.chats = true;
+                    isValid = false;
+                } else {
+                    newErrors.chats = false;
+                }
+                break;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    }, [description, selectedDate, notifications, selectedChats, errors]);
+
+    const canProceedToNextStep = useCallback(() => {
+        switch (currentStep) {
+            case 1:
+                return description.trim().length > 0;
+            case 2:
+                return selectedDate !== null;
+            case 3:
+                return true;
+            case 4:
+                return notifications.length > 0;
+            case 5:
+                return selectedChats.length > 0;
+            default:
+                return false;
+        }
+    }, [currentStep, description, selectedDate, notifications, selectedChats]);
+
+    const handleStepChange = useCallback((step) => {
+        setCurrentStep(step);
     }, []);
 
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
-
-    const handleChatSelect = (chats) => {
-        setSelectedChats(chats);
-    };
-
-    const handleDateChange = (date) => {
-        console.log('CreateEvent received new date:', date);
-        setSelectedDate(date);
-    };
-
     const handleRepeatTypeChange = (type) => {
+        setRepeatType(type);
         if (type === 'none') {
             setSelectedWeekdays([]);
             setMonthDay(null);
         }
-        setRepeatType(type);
-    };
-
-    const handleAddNotification = () => {
-        const newNotification = {
-            id: Date.now(),
-            time: 5,
-            message: ''
-        };
-        setCurrentNotification(newNotification);
-        setIsAddingNotification(true);
-    };
-
-    const handleUpdateNotification = (field, value) => {
-        setCurrentNotification(notification);
-        setIsAddingNotification(true);
-        setNotification(null);
-        
-        setCurrentNotification(prev => ({
-            ...prev,
-            [field]: value
-        }));
-    };
-
-    const handleSaveNotification = () => {
-        if (!currentNotification?.message?.trim()) {
-            setIsAddingNotification(false);
-            setCurrentNotification(null);
-            return;
+        if (type === 'weekly') {
+            const today = new Date().getDay();
+            setSelectedWeekdays([today]);
         }
-
-        setNotification(currentNotification);
-        setIsAddingNotification(false);
-        setCurrentNotification(null);
-    };
-
-    const handleDeleteNotification = () => {
-        setNotification(null);
-        setIsAddingNotification(false);
-        setCurrentNotification(null);
+        if (type === 'monthly') {
+            setMonthDay(new Date().getDate());
+        }
     };
 
     const handleWeekdayChange = (day) => {
-        setSelectedWeekdays(prev => {
-            if (prev.includes(day)) {
-                return prev.filter(d => d !== day);
-            }
-            return [...prev, day].sort((a, b) => a - b);
-        });
+        setSelectedWeekdays(prev => 
+            prev.includes(day)
+                ? prev.filter(d => d !== day)
+                : [...prev, day]
+        );
     };
 
-    return (
-        <div className={styles.pageWrapper}>
-            <Header />
-            <main className={styles.container}>
-                {isMobileView ? (
-                    <MobileLayout 
-                        description={description}
+    const handleMonthDayChange = (day) => {
+        setMonthDay(day);
+    };
+
+    const handleChatSelect = (chatIds) => {
+        setSelectedChats(chatIds);
+    };
+
+    const handleNotificationsChange = (newNotifications) => {
+        setNotifications(newNotifications);
+    };
+
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1:
+                return (
+                    <TextArea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Описание события..."
+                        maxLength={1000}
+                    />
+                );
+            case 2:
+                return (
+                    <DateTimePicker
                         selectedDate={selectedDate}
+                        onDateChange={setSelectedDate}
+                    />
+                );
+            case 3:
+                return (
+                    <RepeatSettings
                         repeatType={repeatType}
                         selectedWeekdays={selectedWeekdays}
                         monthDay={monthDay}
-                        notification={notification}
-                        selectedChats={selectedChats}
-                        isAddingNotification={isAddingNotification}
-                        currentNotification={currentNotification}
-                        onDescriptionChange={handleDescriptionChange}
-                        onDateChange={handleDateChange}
                         onRepeatTypeChange={handleRepeatTypeChange}
                         onWeekdayChange={handleWeekdayChange}
-                        onMonthDayChange={setMonthDay}
-                        onNotificationUpdate={handleUpdateNotification}
-                        onNotificationDelete={handleDeleteNotification}
-                        onChatSelect={handleChatSelect}
-                        onAddNotification={handleAddNotification}
-                        onSaveNotification={handleSaveNotification}
+                        onMonthDayChange={handleMonthDayChange}
                     />
-                ) : (
-                    <div className={styles.columns}>
-                        <div className={styles.column}>
-                            <div className={styles.columnContent}>
-                                <div className={styles.textareaSection}>
-                                    <TextArea 
-                                        value={description}
-                                        onChange={handleDescriptionChange}
-                                    />
-                                </div>
-                                <div className={styles.notificationsSection}>
-                                    <h3 className={styles.sectionTitle}>Уведомления</h3>
-                                    <div className={styles.notificationsContainer}>
-                                        {notification && !isAddingNotification && (
-                                            <NotificationItem
-                                                notification={notification}
-                                                onUpdate={handleUpdateNotification}
-                                                onDelete={handleDeleteNotification}
-                                            />
-                                        )}
-                                    </div>
-                                    {(!notification || isAddingNotification) && (
-                                        isAddingNotification ? (
-                                            <div className={styles.addingNotificationContainer}>
-                                                <NotificationItem
-                                                    notification={currentNotification}
-                                                    onUpdate={(field, value) => 
-                                                        setCurrentNotification({
-                                                            ...currentNotification,
-                                                            [field]: value
-                                                        })
-                                                    }
-                                                    onDelete={() => {
-                                                        setIsAddingNotification(false);
-                                                        setCurrentNotification(null);
-                                                    }}
-                                                />
-                                                <button 
-                                                    className={styles.saveNotificationBtn}
-                                                    onClick={handleSaveNotification}
-                                                >
-                                                    OK
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <AddNotificationButton 
-                                                onClick={handleAddNotification}
-                                                className={styles.addNotificationBtn}
-                                            >
-                                                Добавить уведомление
-                                            </AddNotificationButton>
-                                        )
-                                    )}
-                                </div>
-                            </div>
-                            <div className={styles.bottomSection}>
-                                <div className={styles.chatsWrapper}>
-                                    <Button 
-                                        variant="selectChats"
-                                        onClick={() => setIsChatsOpen(!isChatsOpen)}
-                                        selected={selectedChats.length > 0}
-                                    >
-                                        {selectedChats.length > 0 
-                                            ? `Выбрано чатов: ${selectedChats.length}`
-                                            : 'Выбрать чаты'
-                                        }
-                                    </Button>
-                                    <AnimatePresence>
-                                        {isChatsOpen && (
-                                            <motion.div 
-                                                className={styles.chatsContainer}
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: 5 }}
-                                            >
-                                                <ChatSelector 
-                                                    selectedChats={selectedChats}
-                                                    onChatSelect={handleChatSelect}
-                                                />
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            </div>
-                        </div>
+                );
+            case 4:
+                return (
+                    <NotificationManager 
+                        notifications={notifications}
+                        onNotificationsChange={handleNotificationsChange}
+                    />
+                );
+            case 5:
+                return (
+                    <ChatSelector
+                        selectedChats={selectedChats}
+                        onChatSelect={handleChatSelect}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
 
-                        {!isMobileView ? (
-                            <div className={`${styles.column} ${styles.rightColumn}`}>
-                                <div className={styles.dateTimeSection}>
-                                    <div className={styles.datePickerWrapper}>
-                                        <h3 className={styles.sectionTitle}>Дата и время</h3>
-                                        <DatePicker 
-                                            value={selectedDate}
-                                            onChange={handleDateChange}
-                                        />
-                                    </div>
-                                </div>
-                                <div className={styles.repeatSection}>
-                                    <RepeatSettings
-                                        repeatType={repeatType}
-                                        selectedWeekdays={selectedWeekdays}
-                                        monthDay={monthDay}
-                                        onRepeatTypeChange={handleRepeatTypeChange}
-                                        onWeekdayChange={(day) => {
-                                            setSelectedWeekdays(prev => {
-                                                if (prev.includes(day)) {
-                                                    return prev.filter(d => d !== day);
-                                                }
-                                                return [...prev, day].sort((a, b) => a - b);
-                                            });
-                                        }}
-                                        onMonthDayChange={setMonthDay}
-                                    />
-                                </div>
+    const handleSubmit = async () => {
+        try {
+            setIsLoading(true);
+            
+            // Получаем выбранную дату
+            const localDate = new Date(selectedDate);
+            console.log('Selected local date:', localDate.toLocaleString());
+            
+            // Создаем объект с часовым поясом Красноярска
+            const krasnoyarskDate = new Date(localDate);
+            
+            // Форматируем дату в строку YYYY-MM-DD HH:mm в Красноярском времени
+            const formattedDate = krasnoyarskDate.toLocaleString('sv', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'Asia/Krasnoyarsk'
+            }).replace('T', ' ');
+            
+            console.log('Formatted date (Krasnoyarsk time):', formattedDate);
+            
+            const eventData = {
+                description: description,
+                date: formattedDate,
+                repeat: {
+                    type: repeatType,
+                    weekdays: selectedWeekdays,
+                    monthDay: monthDay
+                },
+                notifications: notifications.map(n => ({
+                    message: n.message,
+                    time: parseInt(n.time)
+                })),
+                chat_ids: selectedChats
+            };
+            
+            console.log('Event data being sent:', eventData);
+            
+            const response = await fetch('/api/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(eventData),
+            });
+
+            setIsSuccess(true);
+            setTimeout(() => {
+                navigate('/events');
+            }, 1500);
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className={styles.pageWrapper} data-theme={theme}>
+            <AnimatePresence>
+                {isSuccess ? (
+                    <SuccessScreen />
+                ) : (
+                    isMobile ? (
+                        <MobileLayout
+                            currentStep={currentStep}
+                            onStepChange={handleStepChange}
+                            isLoading={isLoading}
+                            canProceed={canProceedToNextStep()}
+                            onSubmit={handleSubmit}
+                        >
+                            <div className={styles.stepContent}>
+                                {renderStepContent()}
                             </div>
-                        ) : (
-                            <div className={styles.mobileRightColumn}>
-                                <button 
-                                    className={styles.mobileSettingsButton}
-                                    onClick={() => setIsMobileSettingsOpen(true)}
-                                >
-                                    Настройки даты и повторения
-                                </button>
-                                <AnimatePresence>
-                                    {isMobileSettingsOpen && (
-                                        <motion.div 
-                                            className={styles.mobileSettings}
-                                            initial={{ y: '100%' }}
-                                            animate={{ y: 0 }}
-                                            exit={{ y: '100%' }}
-                                            transition={{ type: 'spring', damping: 30 }}
-                                        >
-                                            <div className={styles.dateTimeSection}>
-                                                <div className={styles.datePickerWrapper}>
-                                                    <h3 className={styles.sectionTitle}>Дата и время</h3>
-                                                    <DatePicker 
-                                                        value={selectedDate}
-                                                        onChange={handleDateChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className={styles.repeatSection}>
-                                                <RepeatSettings
-                                                    repeatType={repeatType}
-                                                    selectedWeekdays={selectedWeekdays}
-                                                    monthDay={monthDay}
-                                                    onRepeatTypeChange={handleRepeatTypeChange}
-                                                    onWeekdayChange={(day) => {
-                                                        setSelectedWeekdays(prev => {
-                                                            if (prev.includes(day)) {
-                                                                return prev.filter(d => d !== day);
-                                                            }
-                                                            return [...prev, day].sort((a, b) => a - b);
-                                                        });
-                                                    }}
-                                                    onMonthDayChange={setMonthDay}
-                                                />
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        )}
-                    </div>
+                        </MobileLayout>
+                    ) : (
+                        <DesktopLayout>
+                            {/* Десктопная версия */}
+                        </DesktopLayout>
+                    )
                 )}
-            </main>
-            <Footer />
+            </AnimatePresence>
         </div>
     );
 };

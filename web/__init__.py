@@ -1,28 +1,20 @@
-from flask import Flask, send_from_directory
-from flask_cors import CORS
+from flask import Flask
+from web.app import bp
+from werkzeug.middleware.shared_data import SharedDataMiddleware
 import os
 
 def create_app():
-    app = Flask(__name__,
-        static_url_path='/static',
-        static_folder='static',
-        template_folder='templates'
-    )
+    app = Flask(__name__)
     
-    # Настройка CORS для режима разработки
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": ["http://localhost:3000"],
-            "methods": ["GET", "POST", "PUT", "DELETE"],
-            "allow_headers": ["Content-Type"]
-        }
+    # Регистрируем blueprint
+    app.register_blueprint(bp)
+    
+    # Получаем путь к статическим файлам из blueprint
+    build_path = bp.build_path
+    
+    # Добавляем middleware для статических файлов
+    app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
+        '/static': os.path.join(build_path, 'static')
     })
-    
-    # Настройка конфигурации
-    app.config.from_object('config.Config')
-    
-    # Импортируем и регистрируем маршруты API
-    from web.app import bp as routes_bp
-    app.register_blueprint(routes_bp, url_prefix='/api')
     
     return app

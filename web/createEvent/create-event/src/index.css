@@ -1,51 +1,31 @@
 :root {
-    --primary-color: #e67e22;
-    --primary-light: #f39c12;
-    --primary-transparent: rgb(230 126 34 / 10%);
-    --white: #fff;
-    --gray-light: #f5f5f5;
-    --gray: #e0e0e0;
-    --gray-dark: #666;
-    --text-color: #333;
-    --border-color: #ddd;
-    --radius: 8px;
-    --background: #fff;
+    /* Светлая тема */
+    --background-color: #F8F9FA;
+    --card-background: #FFFFFF;
+    --text-color: #1A1A1A;
+    --text-secondary: #6C757D;
+    --border-color: #E9ECEF;
+    
+    /* Цвета для событий */
+    --event-shadow: rgba(0, 0, 0, 0.1);
+    --event-border: #E9ECEF;
+    --event-hover: #F8F9FA;
+    --swipe-delete: rgba(255, 59, 48, 0.1);
+    --swipe-delete-active: rgba(255, 59, 48, 0.2);
 }
 
 [data-theme="dark"] {
-    --primary-color: #f39c12;
-    --primary-light: #e67e22;
-    --primary-transparent: rgb(243 156 18 / 10%);
-    --white: #1a1a1a;
-    --gray-light: #2a2a2a;
-    --gray: #404040;
-    --gray-dark: #999;
-    --text-color: #fff;
+    /* Темная тема */
+    --background-color: #1A1A1A;
+    --card-background: #2D2D2D;
+    --text-color: #FFFFFF;
+    --text-secondary: #A0A0A0;
     --border-color: #404040;
-    --background: #1a1a1a;
-}
-
-/* Сброс стилей для кнопок */
-button {
-    border: none;
-    margin: 0;
-    padding: 0;
-    background: none;
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    
+    /* Цвета для событий в темной теме */
+    --event-shadow: rgba(0, 0, 0, 0.3);
+    --event-border: #404040;
+    --event-hover: #363636;
+    --swipe-delete: rgba(255, 59, 48, 0.15);
+    --swipe-delete-active: rgba(255, 59, 48, 0.25);
 }

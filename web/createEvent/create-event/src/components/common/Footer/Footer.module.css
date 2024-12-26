@@ -9,6 +9,20 @@
     z-index: 100;
 }
 
+/* Скрываем футер в мобильном лейауте */
+@media (width <= 480px) {
+    .footer {
+        display: none;
+    }
+}
+
+/* Также скрываем в ландшафтной ориентации на мобильных */
+@media (height <= 480px) and (orientation: landscape) {
+    .footer {
+        display: none;
+    }
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;

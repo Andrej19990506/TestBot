@@ -1,31 +1,79 @@
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = '/api';
+
+const defaultHeaders = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+};
 
 export const getEvents = async () => {
-  const response = await fetch(`${API_URL}/events`);
-  if (!response.ok) {
-    throw new Error('Не удалось загрузить события');
-  }
-  return response.json();
+    try {
+        const response = await fetch(`${API_URL}/events`, {
+            headers: defaultHeaders
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
 };
 
 export const getChats = async () => {
-  const response = await fetch(`${API_URL}/chats`);
-  if (!response.ok) {
-    throw new Error('Не удалось загрузить список чатов');
-  }
-  return response.json();
+    try {
+        const response = await fetch(`${API_URL}/chats`, {
+            headers: defaultHeaders
+        });
+
+        if (!response.ok) {
+            throw new Error('Не удалось загрузить список чатов');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
 };
 
 export const createEvent = async (eventData) => {
-  const response = await fetch(`${API_URL}/events`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(eventData),
-  });
-  if (!response.ok) {
-    throw new Error('Не удалось создать событие');
-  }
-  return response.json();
+    try {
+        const response = await fetch(`${API_URL}/events`, {
+            method: 'POST',
+            headers: defaultHeaders,
+            body: JSON.stringify(eventData)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Не удалось создать событие');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+};
+
+export const deleteEvent = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}/events/${id}`, {
+            method: 'DELETE',
+            headers: defaultHeaders
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return true;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
 }; 

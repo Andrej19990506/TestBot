@@ -29,18 +29,6 @@
     color: var(--white);
 }
 
-.navLink.active::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 4px;
-    background: var(--primary-color);
-    border-radius: 50%;
-}
-
 .iconWrapper {
     display: flex;
     align-items: center;
@@ -60,14 +48,20 @@
 }
 
 /* Адаптивность */
-@media (width >= 0) and (width <= 768px) {
+@media (width <= 480px) {
     .navLinks {
-        gap: 16px;
+        gap: 8px;
+        justify-content: center;
     }
 
     .navLink {
-        padding: 6px 12px;
+        padding: 6px 10px;
         font-size: 14px;
+    }
+
+    .iconWrapper {
+        gap: 4px;
+        padding: 2px;
     }
 
     .icon {
@@ -75,8 +69,14 @@
         height: 20px;
     }
 
+    /* Скрываем текст на мобильных, оставляем только иконки */
     .navText {
         display: none;
+    }
+
+    /* Делаем иконки более заметными */
+    .navLink.active .icon {
+        transform: scale(1.1);
     }
 }
 

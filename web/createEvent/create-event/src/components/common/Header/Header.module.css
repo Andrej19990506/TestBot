@@ -3,41 +3,116 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 70px;
+    height: 60px;
     background: var(--card-background);
-    box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
-    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0 20px;
     height: 100%;
     display: flex;
     align-items: center;
-    gap: 48px;
+    justify-content: space-between;
 }
 
-.logo {
-    font-size: 1.25rem;
-    font-weight: 600;
+.logoButton {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
     color: var(--primary-color);
-    white-space: nowrap;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.logoButton:hover {
+    transform: scale(1.1);
+    color: var(--primary-light);
+}
+
+.logoButton:active {
+    transform: scale(0.95);
+}
+
+.logoIcon {
+    width: 32px;
+    height: 32px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navLink, .themeToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--primary-transparent);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.navLink:hover, .themeToggle:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.2);
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Анимация при нажатии */
+.navLink:active, .themeToggle:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(230, 126, 34, 0.1);
 }
 
 /* Адаптивность */
-@media (width >= 0) and (width <= 768px) {
-    .header {
-        height: 60px;
-    }
-
+@media (width <= 768px) {
     .container {
-        padding: 0 12px;
-        gap: 24px;
+        padding: 0 16px;
     }
 
-    .logo {
-        font-size: 1.1rem;
+    .logoIcon {
+        width: 28px;
+        height: 28px;
     }
-} 
+
+    .navLink, .themeToggle {
+        width: 36px;
+        height: 36px;
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+ 

@@ -1,176 +1,46 @@
-.wrapper {
-    width: 100%;
-    height: 100%;
-    min-height: 150px;
-    max-height: 150px;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 16px;
-    align-items: center;
-
-}
-
-.textareaContainer {
-    position: relative;
-    flex: 1;
-    display: flex;
-    background: var(--background-color);
-    border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid transparent;
-    overflow: hidden;
-    width: 97%;
+.textareaWrapper,
+.textarea,
+.counter,
+.errorText {
     box-sizing: border-box;
-    margin-top: 5px;
 }
 
-.textareaContainer.focused {
-    box-shadow: 0 0 0 4px var(--primary-transparent);
-}
-
-.textareaContainer::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom right,
-        transparent,
-        rgb(from var(--primary-rgb) r g b / 5%),
-        transparent
-    );
-    opacity: 0%;
-    transition: opacity 0.3s ease;
-    border-radius: 14px;
+.textareaWrapper {
+    position: relative;
+    width: 100%;
+    background: var(--background-color);
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .textarea {
     width: 100%;
-    height: 100%;
-    resize: none;
-    padding: 20px;
-    padding-bottom: 44px;
-    border: none;
-    background: transparent;
+    min-height: 140px;
+    max-height: 50vh;
+    padding: 12px;
+    padding-bottom: 32px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-color);
     color: var(--text-color);
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 15px;
+    line-height: 1.5;
+    resize: none;
     transition: all 0.2s ease;
-    z-index: 1;
-    overflow: auto;
-    box-sizing: border-box;
-    word-break: break-word;
-    white-space: pre-wrap;
-    border-radius: 14px;
-    max-width: 100%;
-    margin: 0;
-    display: block;
 }
 
 .textarea:focus {
     outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-transparent);
 }
 
 .textarea::placeholder {
-    color: var(--gray-dark);
-    opacity: 70%;
-    transition: all 0.3s ease;
+    color: var(--text-secondary);
 }
 
-/* Анимация для плейсхолдера */
-@keyframes placeholderShine {
-    0% {
-        background-position: -100px;
-    }
-
-    40%, 100% {
-        background-position: 200px;
-    }
-}
-
-.textarea:not(:focus)::placeholder {
-    background: linear-gradient(
-        90deg,
-        var(--gray-dark) 0%,
-        var(--primary-color) 50%,
-        var(--gray-dark) 100%
-    );
-    background-size: 200px 100%;
-    background-repeat: no-repeat;
-    background-clip: text;
-    color: transparent;
-    animation: placeholderShine 3s infinite linear;
-}
-
-.textarea:focus::placeholder {
-    opacity: 40%;
-}
-
-.charCounter {
-    position: absolute;
-    right: 16px;
-    bottom: 12px;
-    font-size: 0.75rem;
-    color: var(--gray-dark);
-    background: var(--background-color);
-    padding: 4px 10px;
-    border-radius: 12px;
-    pointer-events: none;
-    z-index: 1;
-    transition: all 0.2s ease;
-}
-
-.charCounter.warning {
-    color: var(--error-color);
-    background: var(--error-transparent);
-}
-
-/* Темная тема */
-[data-theme="dark"] .textareaContainer {
-    background: var(--card-background);
-}
-
-[data-theme="dark"] .textareaContainer::before {
-    background: linear-gradient(
-        to bottom right,
-        transparent,
-        rgb(from var(--primary-rgb) r g b / 10%),
-        transparent
-    );
-}
-
-[data-theme="dark"] .charCounter {
-    background: var(--card-background);
-}
-
-[data-theme="dark"] .charCounter.warning {
-    background: var(--error-dark);
-}
-
-/* Адаптивность */
-@media (width >= 0) and (width <= 768px) {
-    .wrapper {
-        min-height: 120px;
-        max-height: 120px;
-    }
-
-    .textarea {
-        padding: 16px;
-        padding-bottom: 40px;
-        font-size: 0.875rem;
-    }
-
-    .charCounter {
-        right: 12px;
-        bottom: 10px;
-        font-size: 0.75rem;
-        padding: 3px 8px;
-    }
-}
-
-/* Добавляем стили для скроллбара */
 .textarea::-webkit-scrollbar {
-    width: 8px;
-    height: 0;
+    width: 4px;
 }
 
 .textarea::-webkit-scrollbar-track {
@@ -178,7 +48,65 @@
 }
 
 .textarea::-webkit-scrollbar-thumb {
-    background: var(--primary-transparent);
+    background: var(--gray-300);
     border-radius: 4px;
+}
+
+.counter {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--background-color);
+    padding: 2px 8px;
+    border-radius: 8px;
+}
+
+.error .textarea {
+    border-color: var(--error-color);
+    background: var(--error-background);
+}
+
+.errorText {
+    color: var(--error-color);
+    font-size: 12px;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+[data-theme="dark"] {
+    .textarea {
+        background: var(--gray-900);
+        border-color: var(--gray-800);
+    }
+
+    .textarea:focus {
+        border-color: var(--orange-light);
+        box-shadow: 0 0 0 2px rgba(255, 95, 31, 0.2);
+    }
+
+    .textarea::-webkit-scrollbar-thumb {
+        background: var(--gray-700);
+    }
+
+    .counter {
+        background: var(--gray-900);
+    }
+}
+
+@media (max-width: 480px) {
+    .textarea {
+        font-size: 14px;
+        min-height: 120px;
+        padding: 10px;
+        padding-bottom: 28px;
+    }
+
+    .counter {
+        bottom: 6px;
+        right: 8px;
+        font-size: 11px;
+    }
 }
   

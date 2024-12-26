@@ -1,49 +1,31 @@
 import { useState, useCallback } from 'react';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
+import { API_URL } from '../config';
 
 export const useApi = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const handleResponse = async (response) => {
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.error || 'Произошла ошибка при запросе к серверу');
-        }
-        return data;
-    };
-
-    const fetchChats = useCallback(async () => {
+    const getChats = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/chats`, {
+            const response = await fetch(`${API_URL}/chats`, {
+                method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                },
-                credentials: 'omit'
+                }
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
-            const formattedChats = {};
-            for (const [chatName, chatId] of Object.entries(data)) {
-                formattedChats[chatId] = {
-                    id: chatId,
-                    title: chatName
-                };
-            }
-            
-            return formattedChats;
+            return data;
         } catch (err) {
             console.error('API Error:', err);
             setError(err.message);
-            return {};
+            throw err;
         } finally {
             setLoading(false);
         }
@@ -52,26 +34,19 @@ export const useApi = () => {
     const fetchEvents = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/events`, {
+            const response = await fetch(`${API_URL}/events`, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                },
-                credentials: 'omit'
+                }
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
-            if (!Array.isArray(data)) {
-                console.warn('API returned non-array data:', data);
-                return [];
-            }
-            
-            return data;
+            return Array.isArray(data) ? data : [];
         } catch (err) {
             console.error('API Error:', err);
             setError(err.message);
@@ -82,8 +57,9 @@ export const useApi = () => {
     }, []);
 
     const createEvent = useCallback(async (eventData) => {
+        setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/events`, {
+            const response = await fetch(`${API_URL}/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,26 +75,28 @@ export const useApi = () => {
             return await response.json();
         } catch (error) {
             console.error('API Error:', error);
+            setError(error.message);
             throw error;
+        } finally {
+            setLoading(false);
         }
     }, []);
 
     const deleteEvent = useCallback(async (eventId) => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+            const response = await fetch(`${API_URL}/events/${eventId}`, {
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                },
-                credentials: 'omit'
+                }
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             return true;
         } catch (err) {
             console.error('API Error:', err);
@@ -132,22 +110,20 @@ export const useApi = () => {
     const updateEvent = useCallback(async (eventId, updateData) => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+            const response = await fetch(`${API_URL}/events/${eventId}`, {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                credentials: 'omit',
                 body: JSON.stringify(updateData)
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
-            const data = await response.json();
-            return data;
+
+            return await response.json();
         } catch (err) {
             console.error('API Error:', err);
             setError(err.message);
@@ -160,7 +136,7 @@ export const useApi = () => {
     return {
         loading,
         error,
-        fetchChats,
+        getChats,
         fetchEvents,
         createEvent,
         deleteEvent,

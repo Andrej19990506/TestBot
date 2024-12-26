@@ -1,5 +1,4 @@
 const isDev = process.env.NODE_ENV === 'development';
+const API_URL = isDev ? 'http://localhost:5000/api' : '/api';
 
-export const API_URL = isDev 
-  ? '/api'  // Для локальной разработки
-  : '/api';  // Возвращаем обратно для разработки
+export { API_URL };

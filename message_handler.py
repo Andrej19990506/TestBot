@@ -89,8 +89,8 @@ class CustomMessageHandler:
         
         logging.debug(f"Вызван process_start для user_id: {user_id}")
 
-        # Используем URL без index.html
-        webapp_url = 'https://eef3-176-215-122-184.ngrok-free.app'
+        
+        webapp_url = 'https://124c-176-215-122-184.ngrok-free.app'
         
         try:
             keyboard = [

@@ -50,19 +50,14 @@ const itemVariants = {
 
 const FadeTransition = ({ children }) => {
     return (
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
             <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
             >
-                <motion.div 
-                    className="form-grid"
-                    variants={itemVariants}
-                >
-                    {children}
-                </motion.div>
+                {children}
             </motion.div>
         </AnimatePresence>
     );

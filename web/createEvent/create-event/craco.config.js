@@ -5,7 +5,7 @@ const config = {
         configure: (webpackConfig) => {
             webpackConfig.output = {
                 ...webpackConfig.output,
-                publicPath: ''
+                publicPath: '/'
             };
             return webpackConfig;
         }
@@ -28,36 +28,14 @@ const config = {
         webSocketServer: false,
         https: false,
         proxy: {
-            '/api/*': {
+            '/api': {
                 target: 'http://localhost:5000',
                 changeOrigin: true,
                 secure: false,
-                pathRewrite: {
-                    '^/api': ''
-                },
-                onProxyReq: function(proxyReq, req, res) {
-                    console.log('Proxying request:', req.method, req.url);
-                },
-                onError: function(err, req, res) {
-                    console.error('Proxy error:', err);
-                }
+                pathRewrite: null
             }
         }
     }
 };
-
-// Прокси только для разработки
-if (process.env.NODE_ENV === 'development') {
-    config.devServer.proxy = {
-        '/api/*': {
-            target: 'http://localhost:5000',
-            changeOrigin: true,
-            secure: false,
-            pathRewrite: {
-                '^/api': ''
-            }
-        }
-    };
-}
 
 module.exports = config; 

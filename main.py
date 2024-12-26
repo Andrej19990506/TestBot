@@ -2,7 +2,7 @@ import logging
 import threading
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.constants import ChatMemberStatus
-from telegram.ext import ApplicationBuilder,CommandHandler, ConversationHandler, MessageHandler, filters, CallbackQueryHandler, CallbackContext
+from telegram.ext import ApplicationBuilder,CommandHandler, ConversationHandler, MessageHandler, filters, CallbackQueryHandler, CallbackContext, Application, JobQueue
 from message_handler import CustomMessageHandler
 from utils.chat_manager import ChatManager
 from utils.mediator import Mediator
@@ -11,7 +11,7 @@ from utils.access_control import AccessControl
 from user_states import set_user_state
 from components.inventory_manager import InventoryManager, SELECT_CHAT, CHOOSING_CATEGORY, CHOOSING_ITEM, CHOOSING_ITEM_TYPE, ENTERING_QUANTITY, RETURN_MENU, EDITING_ITEM, EDITING_SELECTION, ENTERING_QUANTITY_FOR_EDIT
 from web import create_app
-from config import bot_token
+from config import Config, bot_token
 from functools import partial
 import asyncio
 import date_manager
@@ -20,6 +20,10 @@ from initialize_data import initialize_data_files
 import globals
 import signal
 import sys
+from web.telegram_bot import TelegramBot
+from datetime import time
+import pytz
+from datetime import datetime, timedelta
 
 # Добавляем эту строку для решения проблемы с event loop
 nest_asyncio.apply()
@@ -98,7 +102,7 @@ async def start(update: Update, context: CallbackContext, access_control: Access
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         await update.message.reply_text(
-            f'Добро пожаловать, {user_name}! Нажмите "Приступить", чт��бы начать.',
+            f'Добро пожаловать, {user_name}! Нажмите "Приступить", чтобы начать.',
             reply_markup=reply_markup
         )
 
@@ -155,7 +159,7 @@ async def welcome_message(update: Update, context: CallbackContext) -> None:
                     )
                     await context.bot.leave_chat(chat_id=chat_id)
             else:
-                # Если добавлен новый участник (но не бот), добавим его в chat_members.json
+                # Если добавл��н новый учст��ик (но не бот), добавим его в chat_members.json
                 globals.chat_manager.add_user_to_chat(member.id, update.message.chat.id)
                 logging.info(f"Новый участник {member.id} добавлен в чат {update.message.chat.id}.")
 
@@ -224,7 +228,7 @@ async def button_handler(update: Update, context: CallbackContext, access_contro
         if 0 <= event_index < len(events):
             event = events[event_index]
         else:
-            logging.error(f"Событие с индексо�� {event_index} не найдено в events.")
+            logging.error(f"Событие с индексом {event_index} не найдено в events.")
             await query.edit_message_text(text="⚠️ Событие не найдено для удаления.")
             return
 
@@ -249,7 +253,7 @@ async def button_handler(update: Update, context: CallbackContext, access_contro
         
         if event_index < 0 or event_index >= len(events):
             logging.error("Ошибка: Неверный индекс события, оно не найдено.")
-            await query.edit_message_text(text="О��ибка: событие не найдено.")
+            await query.edit_message_text(text="Ошибка: событие не найдено.")
             return
 
         event = events[event_index]
@@ -290,8 +294,8 @@ async def button_handler(update: Update, context: CallbackContext, access_contro
         logging.info(f"Выбранные идентификаторы чатов: {selected_chat_ids}")
 
         if not selected_chat_names:
-            await query.edit_message_text(text="��ы не выбрали ��и ��дного чата.")
-            logging.info(f"Пользователь {user_id} пытался подтвердить выбор без выбранных чатов.")
+            await query.edit_message_text(text="Вы не выбрали ни одного чата.")
+            logging.info(f"Пользователь {user_id} пытался подвердить выбор без выбранных чатов.")
             return
 
         message = await query.edit_message_text(text=f"Выбраны чаты: {', '.join(selected_chat_names)}")
@@ -350,8 +354,25 @@ def setup_application(application, inventory_conv_handler):
 # Функция для запуска Flask-сервера
 def run_flask():
     """Функция для запуска Flask-сервера"""
-    app = create_app()
-    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
+    try:
+        app = create_app()
+        
+        # Получаем настройки из конфигурации
+        host = Config.FLASK_HOST
+        port = Config.FLASK_PORT
+        
+        # Запускаем сервер без режима отладки и без перезагрузки
+        app.run(
+            host=host,
+            port=port,
+            debug=False,
+            use_reloader=False,
+            threaded=True  # Включаем многопоточность
+        )
+        
+    except Exception as e:
+        logging.error(f"Ошибка при запуске Flask сервера: {e}")
+        raise
 
 async def run_bot(application):
     """Функция для запуска бота"""
@@ -381,6 +402,25 @@ def setup_shutdown_handler(application):
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
+async def check_tasks():
+    while True:
+        try:
+            now = datetime.now(scheduler.timezone)
+            
+            # Проверяем и выполняем текущие задачи
+            await scheduler.check_tasks()
+            
+            # Перепланируем повторяющиеся события
+            await scheduler.replan_repeating_events()
+            
+            # Ждем до следующей минуты
+            next_minute = (now + timedelta(minutes=1)).replace(second=0, microsecond=0)
+            await asyncio.sleep((next_minute - now).total_seconds())
+            
+        except Exception as e:
+            logging.error(f"Error in check_tasks: {str(e)}")
+            await asyncio.sleep(60)
+
 async def main():
     try:
         # Инициализация файлов данных
@@ -389,11 +429,16 @@ async def main():
         # Настройка логирования
         setup_logging()
         
-        # Инициализация компонентов
-        mediator = Mediator()
-        globals.chat_manager = ChatManager(mediator)
-        globals.access_control = AccessControl(globals.chat_manager)
+        # Создаем приложение
         application = ApplicationBuilder().token(bot_token).build()
+        
+        # Создаем и сохраняем бота
+        telegram_bot = TelegramBot(bot_token)
+        globals.telegram_bot = telegram_bot
+        
+        # Создаем планировщик с ботом
+        scheduler = Scheduler(telegram_bot)
+        globals.scheduler = scheduler
         
         # Настройка корректного завершения
         setup_shutdown_handler(application)
@@ -402,9 +447,6 @@ async def main():
         mediator = Mediator()
         globals.chat_manager = ChatManager(mediator)
         globals.access_control = AccessControl(globals.chat_manager)
-        application = ApplicationBuilder().token(bot_token).build()
-        scheduler = Scheduler(mediator, globals.chat_manager)
-        scheduler.job_queue = application.job_queue  # Устанавливаем job_queue отдельно
         
         # Регистрация компонентов в медиаторе
         mediator.register_scheduler(scheduler)
@@ -418,6 +460,9 @@ async def main():
             mediator=mediator,
             scheduler=scheduler
         )
+
+        # Привязываем inventory_manager к scheduler
+        scheduler.attach_inventory_manager(globals.inventory_manager)
 
         mediator.register_inventory_manager(globals.inventory_manager)
 
@@ -502,6 +547,9 @@ async def main():
 
     except Exception as e:
         logging.error(f"Критическая ошибка: {e}")
+        print(f"Произошла ошибка: {e}")
+        if 'loop' in locals():
+            loop.stop()
         raise
 
 def run():

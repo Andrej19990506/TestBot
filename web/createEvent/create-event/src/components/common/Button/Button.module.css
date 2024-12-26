@@ -23,9 +23,13 @@
     border-radius: var(--radius);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+    border: none;
 }
 
 /* Размеры */
@@ -286,5 +290,99 @@
         width: 22px;
         height: 22px;
         border-radius: 6px;
+    }
+} 
+
+/* Эффекты и анимации */
+.button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.button:active::before {
+    width: 200%;
+    height: 200%;
+    opacity: 0.15;
+    transition: width 0s, height 0s, opacity 0.1s;
+}
+
+@keyframes buttonPress {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.96); }
+    100% { transform: scale(1); }
+}
+
+.button:active {
+    animation: buttonPress 0.4s ease;
+}
+
+/* Специфичные стили для разных вариантов */
+.primary::before {
+    background: white;
+}
+
+.primary:active::before {
+    opacity: 0.25;
+}
+
+.primary:hover {
+    background: var(--orange-light);
+    box-shadow: 0 2px 8px rgba(255, 95, 31, 0.25);
+}
+
+.default:hover {
+    background: var(--gray-200);
+}
+
+.default:active {
+    background: var(--gray-300);
+}
+
+/* Отключенное состояние */
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    pointer-events: none;
+}
+
+.button:disabled::before {
+    display: none;
+}
+
+/* Темная тема */
+[data-theme="dark"] {
+    .button:active::before {
+        opacity: 0.2;
+    }
+
+    .primary:active::before {
+        opacity: 0.3;
+    }
+
+    .default {
+        background: var(--gray-800);
+        color: var(--gray-200);
+    }
+
+    .default:hover {
+        background: var(--gray-700);
+    }
+
+    .default:active {
+        background: var(--gray-600);
+    }
+
+    .primary:hover {
+        box-shadow: 0 2px 8px rgba(255, 95, 31, 0.4);
     }
 } 

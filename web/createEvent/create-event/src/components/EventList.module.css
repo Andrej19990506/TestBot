@@ -1,89 +1,216 @@
+.eventListContainer {
+    width: 100%;
+    height: calc(100vh - var(--header-height));
+    padding: 20px;
+    background: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
 .eventList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    max-width: 800px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.eventItem {
-    position: relative;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
-    border-left: 4px solid var(--primary-color);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 16px;
-    background: var(--white);
+.eventCard {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 16px;
+    transition: all var(--transition-normal);
 }
 
-.eventItem:hover {
-    transform: translateX(8px);
-    box-shadow: 0 6px 12px rgb(0 0 0 / 10%);
+.eventCard:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
 }
 
 .eventHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.eventTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.eventDate {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
 }
 
 .eventDescription {
-    flex: 1;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    font-size: 1.1rem;
+    font-size: 0.875rem;
     color: var(--text-color);
+    margin-bottom: 16px;
     line-height: 1.5;
+}
+
+.eventFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.eventChats {
+    display: flex;
+    gap: 8px;
+}
+
+.chatBadge {
+    padding: 4px 8px;
+    background: var(--primary-transparent);
+    color: var(--primary-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
 }
 
 .eventActions {
     display: flex;
-    gap: 12px;
-    align-items: center;
+    gap: 8px;
 }
 
-.badge {
+.actionButton {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    background: var(--background-color);
-    border-radius: 20px;
-    font-size: 0.9rem;
-    color: var(--text-color);
+    justify-content: center;
+    transition: all var(--transition-normal);
 }
 
-.badge svg {
-    width: 16px;
-    height: 16px;
+.actionButton:hover {
+    background: var(--hover-overlay);
     color: var(--primary-color);
 }
 
+.deleteButton:hover {
+    color: var(--error-color);
+    background: var(--error-background);
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0%;
+    }
+    to {
+        opacity: 100%;
+    }
+}
+
+.fadeIn {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
 /* Темная тема */
-[data-theme="dark"] .eventItem {
-    background: var(--card-background);
+[data-theme="dark"] {
+    .eventCard {
+        background: var(--card-background);
+        border-color: var(--border-color);
+    }
+
+    .eventCard:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .actionButton {
+        color: var(--text-secondary);
+    }
+
+    .actionButton:hover {
+        background: var(--hover-overlay);
+    }
+
+    .deleteButton:hover {
+        background: var(--error-background);
+    }
 }
 
 /* Адаптивность */
-@media (width <= 768px) {
-    .eventList {
-        grid-template-columns: 1fr;
-        padding: 16px;
-        gap: 16px;
+@media (width >= 480px) {
+    .eventCard {
+        padding: 20px;
     }
 
-    .eventItem {
-        padding: 16px;
-        margin-bottom: 12px;
-    }
-
-    .eventHeader {
-        gap: 12px;
+    .eventTitle {
+        font-size: 1.25rem;
     }
 
     .eventDescription {
         font-size: 1rem;
     }
-} 
+
+    .actionButton {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+.emptyStateContainer {
+    width: 100%;
+    height: calc(100vh - var(--header-height));
+    background: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.loadingContainer,
+.errorContainer {
+    width: 100%;
+    height: calc(100vh - var(--header-height));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--background-color);
+    box-sizing: border-box;
+}
+
+.loading,
+.error {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--card-background);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.error {
+    color: var(--error-color);
+}
+
+/* Темная тема */
+[data-theme="dark"] {
+    .loadingContainer,
+    .errorContainer,
+    .emptyStateContainer {
+        background: var(--background-color);
+    }
+
+    .loading,
+    .error {
+        background: var(--card-background);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    }
+}
+  

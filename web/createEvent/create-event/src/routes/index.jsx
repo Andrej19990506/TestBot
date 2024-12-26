@@ -1,9 +1,7 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import CreateEvent from '../components/CreateEvent';
-import EventList from '../components/EventList';
-import Navigation from '../components/Navigation';
+import { CreateEvent, EventList, Navigation } from '../components';
 
 function AppRoutes() {
     const location = useLocation();

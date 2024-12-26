@@ -1,0 +1,83 @@
+.dateTimeContainer {
+    position: relative;
+    width: 100%;
+}
+
+.inputWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.dateTimeInput {
+    width: 100%;
+    padding: 12px 16px;
+    padding-right: 48px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 16px;
+    color: var(--text-color);
+    background: var(--card-background);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.dateTimeInput::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.inputIcon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.selectedDateDisplay {
+    margin-top: 8px;
+    padding: 12px;
+    background: var(--card-background);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.datePreview {
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+/* Состояния ошибки */
+.inputIcon.error {
+    color: var(--error-color);
+}
+
+.dateTimeInput.error {
+    border-color: var(--error-color);
+}
+
+/* Темная тема */
+[data-theme="dark"] .dateTimeInput {
+    background: var(--card-background-dark);
+    color: var(--text-color-dark);
+}
+
+/* Мобильная версия */
+@media (width <= 768px) {
+    .dateTimeInput {
+        font-size: 14px;
+        padding: 10px 14px;
+        padding-right: 40px;
+    }
+
+    .inputIcon {
+        right: 12px;
+    }
+} 

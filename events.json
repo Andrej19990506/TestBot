@@ -1,167 +1,31 @@
 [
   {
-    "description": "Завтра ген уборка быть всем",
-    "date": "2024-12-18 15:47",
-    "chat_ids": [
-      "-4722230050",
-      "-4775448662",
-      "-4732427913"
-    ],
-    "notifications": [
-      {
-        "time": 5,
-        "unit": "minutes",
-        "message": "Ура"
-      }
-    ],
+    "description": "Зарплата",
+    "date": "2024-12-26 09:55",
     "repeat": {
       "type": "none",
       "weekdays": [],
       "monthDay": null
     },
-    "id": "b95ce672-d06a-4aad-a2dd-c81bf9ec7a2c"
-  },
-  {
-    "description": "Ген уборка",
-    "date": "2024-12-19 16:47",
-    "chat_ids": [
-      "-4722230050",
-      "-4775448662",
-      "-4732427913",
-      "-4755479474",
-      "-4641251467",
-      "-4774890964"
-    ],
     "notifications": [
       {
-        "time": 60,
-        "unit": "minutes",
-        "message": "Не забываем про ген уборку"
+        "message": "Ура зпеха",
+        "time": 5
       }
     ],
-    "repeat": {
-      "type": "none",
-      "weekdays": [],
-      "monthDay": null
-    },
-    "id": "207561ef-ef5f-43bc-8c19-b26292ec2462"
-  },
-  {
-    "description": "Заробатная оплата ",
-    "date": "2024-12-18 16:55",
     "chat_ids": [
-      "-4722230050",
-      "-4775448662",
-      "-4732427913",
-      "-4755479474",
-      "-4641251467",
-      "-4774890964"
+      "Баумана",
+      "Взлетка",
+      "Комунальная",
+      "Мате залки",
+      "Норильская",
+      "Свердловская",
+      "Словцова"
     ],
-    "notifications": [
-      {
-        "time": 5,
-        "unit": "minutes",
-        "message": "Приходим за зарплатой"
-      }
-    ],
-    "repeat": {
-      "type": "none",
-      "weekdays": [],
-      "monthDay": null
-    },
-    "id": "518e7086-865a-4e3b-99f8-35ceb4e37cec"
-  },
-  {
-    "description": "Зарплата быть всем",
-    "date": "2024-12-18 16:59",
-    "chat_ids": [
-      "-4722230050",
-      "-4775448662",
-      "-4732427913",
-      "-4755479474",
-      "-4641251467",
-      "-4774890964"
-    ],
-    "notifications": [
-      {
-        "time": 5,
-        "unit": "minutes",
-        "message": "Приходим за зп"
-      }
-    ],
-    "repeat": {
-      "type": "none",
-      "weekdays": [],
-      "monthDay": null
-    },
-    "id": "f09c9eb7-d05a-4cfd-8dd3-c5bb77dda131"
-  },
-  {
-    "description": "У нас смывы не забудьте",
-    "date": "2024-12-19 07:48",
-    "chat_ids": [
-      "-4732427913",
-      "-4755479474",
-      "-4641251467",
-      "-4774890964"
-    ],
-    "notifications": [
-      {
-        "time": 5,
-        "unit": "minutes",
-        "message": "⚠️ Напоминание: {description}"
-      }
-    ],
-    "repeat": {
-      "type": "none",
-      "weekdays": [],
-      "monthDay": null
-    },
-    "id": "83756704-14bc-4963-bf96-426f51c48970"
-  },
-  {
-    "description": "Вот так вот и никак иначе ",
-    "date": "2024-12-19 09:54",
-    "chat_ids": [
-      "-4755479474"
-    ],
-    "notifications": [
-      {
-        "time": 5,
-        "unit": "minutes",
-        "message": "Ух тыыыы"
-      }
-    ],
-    "repeat": {
-      "type": "none",
-      "weekdays": [],
-      "monthDay": null
-    },
-    "id": "65e5b2ff-a9f7-400e-8a2d-35b9c9d9170c"
-  },
-  {
-    "description": "Заработная оплата ",
-    "date": "2025-01-10 10:22",
-    "chat_ids": [
-      "-4722230050",
-      "-4775448662",
-      "-4732427913",
-      "-4755479474",
-      "-4641251467",
-      "-4774890964"
-    ],
-    "notifications": [
-      {
-        "time": 1440,
-        "unit": "minutes",
-        "message": "Время выдачи зарплаты "
-      }
-    ],
-    "repeat": {
-      "type": "monthly",
-      "weekdays": [],
-      "monthDay": 10
-    },
-    "id": "75f65e00-559b-4b26-89f0-46e5caf42822"
+    "id": "ae4cb44c-02c3-4d0d-a747-f65992456e5b",
+    "scheduling_status": {
+      "active": true,
+      "last_check": "2024-12-26T09:49:17.156674"
+    }
   }
 ]

@@ -1,82 +1,447 @@
-.eventItem {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    background: var(--white);
-    border-radius: var(--radius);
-    border-left: 4px solid var(--primary-color);
-    box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
-    transition: var(--transition);
+.eventItemWrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 16px;
 }
 
-.eventHeader {
+/* Стили для слоя подтверждения */
+.confirmDelete {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1;
+}
+
+.confirmText {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--error);
+    text-align: center;
+}
+
+.confirmText span {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.confirmText strong {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.confirmHint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--error);
+    opacity: 0.6;
+}
+
+.confirmButtons {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.confirmButton {
+    flex: 1;
+    min-width: 140px;
+    padding: 16px 32px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.cancelButton {
+    background: white;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.cancelButton:hover {
+    background: var(--gray-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cancelButton:active {
+    transform: translateY(0);
+}
+
+.deleteButton {
+    background: linear-gradient(45deg, #ff4b4b, #ff6b6b);
+    color: white;
+    border: none;
+}
+
+.deleteButton:hover {
+    background: linear-gradient(45deg, #ff3b3b, #ff5b5b);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 75, 75, 0.3);
+}
+
+.deleteButton:active {
+    transform: translateY(0);
+}
+
+/* Обновляем стили для основного контента */
+.eventItem {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
+    gap: 20px;
+    padding: 16px;
+    background: var(--background-light);
+    border-radius: 12px;
+    margin-top: 70px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: grab;
+    touch-action: pan-y;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.3s ease;
 }
 
-.eventInfo {
+.eventItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.eventItem:active {
+    cursor: grabbing;
+}
+
+.mainContent {
     flex: 1;
+    min-width: 0;
 }
 
-.eventDescription {
-    font-size: 1rem;
-    line-height: 1.5;
-    color: var(--text-color);
+.dateTime {
+    font-size: 14px;
+    color: var(--text-secondary);
     margin-bottom: 8px;
 }
 
-.eventMeta {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+.description {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 16px;
+    line-height: 1.5;
+    word-break: break-word;
 }
 
-.badge {
+.chatTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chatTag {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    background: var(--gray-light);
-    font-size: 0.875rem;
-    color: var(--gray-dark);
-}
-
-.badge svg {
-    width: 16px;
-    height: 16px;
+    padding: 6px 12px;
+    background: transparent;
     color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
-.actions {
+.chatTag:hover,
+.chatTag:active {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.chatTag:active {
+    transform: translateY(0);
+}
+
+.sideContent {
     display: flex;
-    gap: 8px;
-    align-items: center;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
 }
 
 /* Темная тема */
-[data-theme="dark"] .eventItem {
-    background: var(--card-background);
+[data-theme="dark"] {
+    .eventItem {
+        background: var(--gray-dark);
+        border-color: var(--border-dark);
+    }
+
+    .description {
+        color: var(--text-color-dark);
+    }
+
+    .chatTag {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .chatTag:hover,
+    .chatTag:active {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+
+    .deleteButton {
+        background: var(--error-dark);
+    }
+
+    .deleteButton:hover {
+        background: var(--error);
+    }
+
+    .confirmText,
+    .confirmHint {
+        color: var(--error);
+    }
+
+    .confirmDelete {
+        color: var(--text-color-dark);
+    }
+
+    .cancelButton {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .cancelButton:hover {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .deleteButton:hover {
+        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+    }
 }
 
 /* Адаптивность */
-@media (width <= 768px) {
+@media (max-width: 768px) {
     .eventItem {
-        padding: 12px;
-    }
-
-    .eventHeader {
+        padding: 16px;
         gap: 12px;
     }
 
-    .eventDescription {
-        font-size: 0.9375rem;
+    .description {
+        font-size: 15px;
+        margin-bottom: 12px;
     }
 
-    .badge {
-        font-size: 0.8125rem;
+    .chatTags {
+        gap: 6px;
     }
+
+    .chatTag {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .eventItem {
+        flex-direction: column;
+    }
+
+    .sideContent {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .deleteButton {
+        width: 32px;
+        height: 32px;
+    }
+
+    .confirmButtons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 280px;
+        gap: 12px;
+    }
+
+    .confirmButton {
+        width: 100%;
+        padding: 16px;
+        font-size: 16px;
+        min-width: unset;
+    }
+}
+
+/* Добавляем стили для индикатора удаления */
+.eventItemWrapper::before {
+    content: 'Свайпните для удаления';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--error);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.eventItemWrapper:active::before {
+    opacity: 1;
+}
+
+/* Добавляем стили для анимации удаления */
+.deleteAnimation {
+    position: absolute;
+    inset: 0;
+    background: var(--card-background);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 3;
+}
+
+.deleteAnimation.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.deleteIcon {
+    width: 48px;
+    height: 48px;
+    position: relative;
+}
+
+.deleteIcon::before,
+.deleteIcon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--error-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: deleteRipple 1s ease-out;
+}
+
+.deleteIcon::after {
+    animation-delay: 0.3s;
+}
+
+.deleteIcon svg {
+    width: 100%;
+    height: 100%;
+    color: var(--error-color);
+    animation: deleteIconPop 0.5s ease forwards;
+    transform: scale(0);
+}
+
+.deleteText {
+    color: var(--text-color);
+    font-size: 16px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s ease 0.3s forwards;
+}
+
+/* Анимация удаления элемента */
+.eventItemWrapper.removing {
+    animation: slideOut 0.5s ease forwards;
+}
+
+@keyframes deleteRipple {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+@keyframes deleteIconPop {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+/* Темная тема */
+[data-theme="dark"] .deleteAnimation {
+    background: var(--card-background);
+}
+
+[data-theme="dark"] .deleteIcon::before,
+[data-theme="dark"] .deleteIcon::after {
+    border-color: var(--error-color);
+}
+
+[data-theme="dark"] .deleteText {
+    color: var(--text-color);
 } 

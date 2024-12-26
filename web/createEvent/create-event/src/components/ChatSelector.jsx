@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useApi } from '../hooks/useApi';
 import LoadingDots from './common/LoadingDots/LoadingDots';
 import styles from './ChatSelector.module.css';
@@ -7,22 +8,23 @@ const ChatSelector = ({ selectedChats, onChatSelect }) => {
     const [chats, setChats] = React.useState({});
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
-    const { fetchChats } = useApi();
+    const { getChats } = useApi();
 
     React.useEffect(() => {
         const loadChats = async () => {
             try {
                 setLoading(true);
-                const chatsData = await fetchChats();
-                setChats(chatsData);
+                const data = await getChats();
+                setChats(data);
             } catch (err) {
+                console.error('Error loading chats:', err);
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
         loadChats();
-    }, [fetchChats]);
+    }, [getChats]);
 
     const handleChatClick = (chatId) => {
         if (selectedChats.includes(chatId)) {
@@ -59,16 +61,42 @@ const ChatSelector = ({ selectedChats, onChatSelect }) => {
     return (
         <div className={styles.container}>
             <div className={styles.chatsGrid}>
-                {Object.entries(chats).map(([id, chatData]) => (
-                    <div
-                        key={id}
-                        className={`${styles.chatItem} ${selectedChats.includes(id) ? styles.selected : ''}`}
-                        onClick={() => handleChatClick(id)}
-                    >
-                        <span className={styles.chatName}>{chatData.title || `Чат ${id}`}</span>
-                        {selectedChats.includes(id) && <span className={styles.checkMark}>✓</span>}
-                    </div>
-                ))}
+                <AnimatePresence>
+                    {Object.entries(chats).map(([id, chatData]) => (
+                        <motion.div
+                            key={id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 500,
+                                damping: 30
+                            }}
+                            className={`${styles.chatItem} ${selectedChats.includes(id) ? styles.selected : ''}`}
+                            onClick={() => handleChatClick(id)}
+                        >
+                            <span className={styles.chatName}>{chatData.title || `Чат ${id}`}</span>
+                            {selectedChats.includes(id) && (
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 500,
+                                        damping: 30
+                                    }}
+                                    className={styles.checkMark}
+                                >
+                                    ✓
+                                </motion.div>
+                            )}
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
             </div>
         </div>
     );
